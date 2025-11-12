@@ -16,6 +16,55 @@ def find_column(lexpos: int) -> int:
     return (lexpos - last_nl) if last_nl >= 0 else (lexpos + 1)
 
 # SECCIÓN INTEGRANTE 1: Luis Vergara - LuisVergaraA
+# Palabras reservadas
+reserved_integrante1 = {
+    'val'    : 'VAL',
+    'var'    : 'VAR',
+    'fun'    : 'FUN',
+    'return' : 'RETURN',
+    'if'     : 'IF',
+    'else'   : 'ELSE',
+}
+
+# Tokens operadores
+tokens_integrante1 = [
+    # Aritméticos básicos
+    'PLUS',          # +
+    'MINUS',         # -
+    'STAR',          # *
+    'SLASH',         # /
+    'PERCENT',       # %
+    
+    # Asignación
+    'EQUAL',         # =
+    'PLUSEQUAL',     # +=
+    'MINUSEQUAL',    # -=
+    
+    # Incremento/Decremento
+    'PLUSPLUS',      # ++
+    'MINUSMINUS',    # --
+    
+    # Operadores especiales de Kotlin
+    'ARROW',         # ->
+    'RANGE',         # ..
+]
+
+# Reglas de tokens
+t_PLUSPLUS = r'\+\+'
+t_MINUSMINUS = r'--'
+t_PLUSEQUAL = r'\+='
+t_MINUSEQUAL = r'-='
+t_ARROW = r'->'
+t_RANGE = r'\.\.'
+
+t_PLUS = r'\+'
+t_MINUS = r'-'
+t_STAR = r'\*'
+t_SLASH = r'/'
+t_PERCENT = r'%'
+t_EQUAL = r'='
+
+# FIN SECCIÓN INTEGRANTE 1
 
 
 # SECCIÓN INTEGRANTE 2
@@ -23,9 +72,19 @@ def find_column(lexpos: int) -> int:
 
 # SECCIÓN INTEGRANTE 3
 
-# CONSOLIDACIÓN (temporal)
+# Juntar todas las palabras reservadas
 reserved = {}
-tokens = []
+reserved.update(reserved_integrante1)
+reserved.update(reserved_integrante2)
+reserved.update(reserved_integrante3)
+
+# Juntar todos los tokens
+tokens = (
+    tokens_integrante1 +
+    tokens_integrante2 +
+    tokens_integrante3 +
+    tuple(reserved.values())
+)
 
 # Reglas comunes
 t_ignore = ' \t'
