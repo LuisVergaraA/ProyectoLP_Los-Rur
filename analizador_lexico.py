@@ -118,6 +118,117 @@ t_BANG = r'!'
 
 # SECCIÓN INTEGRANTE 3
 
+# ===========================================
+# SECCIÓN INTEGRANTE 3: Structure & Literals
+# Responsable: [Johao Dorado/johaodorado]
+# ===========================================
+
+# Palabras reservadas de estructura (3)
+reserved_integrante3 = {
+    'class'  : 'CLASS',
+    'object' : 'OBJECT',
+    'this'   : 'THIS',
+}
+
+# Tokens delimitadores y literales (15)
+tokens_integrante3 = [
+    # Literales
+    'IDENT',
+    'INT',
+    'DOUBLE',
+    'STRING',
+    'CHAR',
+    
+    # Delimitadores
+    'LPAREN',        # (
+    'RPAREN',        # )
+    'LBRACE',        # {
+    'RBRACE',        # }
+    'LBRACKET',      # [
+    'RBRACKET',      # ]
+    'SEMICOLON',     # ;
+    'COMMA',         # ,
+    'DOT',           # .
+    'COLON',         # :
+]
+
+# Delimitadores
+t_LPAREN = r'\\('
+t_RPAREN = r'\\)'
+t_LBRACE = r'\\{'
+t_RBRACE = r'\\}'
+t_LBRACKET = r'\\['
+t_RBRACKET = r'\\]'
+t_SEMICOLON = r';'
+t_COMMA = r','
+t_DOT = r'\\.'
+t_COLON = r':'
+
+# Literales (funciones para orden de prioridad)
+def t_DOUBLE(t):
+    r'\\d+\\.\\d+'
+    try:
+        t.value = float(t.value)
+    except ValueError:
+        t.value = 0.0
+    return t
+
+def t_INT(t):
+    r'\\d+'
+    try:
+        t.value = int(t.value)
+    except ValueError:
+        t.value = 0
+    return t
+
+def t_CHAR(t):
+    r"'([^'\\\\]|\\\\.)'"
+    t.value = t.value[1:-1]  # Quitar comillas
+    return t
+
+def t_STRING(t):
+    r'"([^"\\\\]|\\\\.)*"'
+    t.value = t.value[1:-1]  # Quitar comillas
+    return t
+
+def t_IDENT(t):
+    r'[a-zA-Z_][a-zA-Z0-9_]*'
+    # Verificar si es palabra reservada
+    t.type = reserved.get(t.value, 'IDENT')
+    return t
+
+# Errores léxicos específicos
+def t_BAD_INT(t):
+    r'\\d+[a-zA-Z_][a-zA-Z0-9_]*'
+    col = find_column(t.lexpos)
+    lexical_errors.append(
+        f"Entero inválido '{t.value}' en línea {t.lineno}, columna {col}"
+    )
+    t.lexer.skip(len(t.value))
+
+def t_UNCLOSED_STRING(t):
+    r'"([^"\\n]|\\\\.)*$'
+    col = find_column(t.lexpos)
+    lexical_errors.append(
+        f"Cadena no cerrada desde línea {t.lineno}, columna {col}"
+    )
+    t.lexer.skip(len(t.value))
+
+def t_UNCLOSED_CHAR(t):
+    r"'([^'\\n]|\\\\.)*$"
+    col = find_column(t.lexpos)
+    lexical_errors.append(
+        f"Carácter no cerrado en línea {t.lineno}, columna {col}"
+    )
+    t.lexer.skip(len(t.value))
+
+# FIN SECCIÓN INTEGRANTE 3
+# ===========================================
+
+# ====================================
+# CONSOLIDACIÓN FINAL
+# ====================================
+
 # Juntar todas las palabras reservadas
 reserved = {}
 reserved.update(reserved_integrante1)
@@ -129,24 +240,48 @@ tokens = (
     tokens_integrante1 +
     tokens_integrante2 +
     tokens_integrante3 +
-    tuple(reserved.values())
+    list(reserved.values())
 )
 
-# Reglas comunes
-t_ignore = ' \t'
+# ====================================
+# REGLAS COMUNES
+# ====================================
 
+# Ignorar espacios y tabulaciones
+t_ignore = ' \\t'
+
+# Comentarios de línea
+def t_COMMENT_SINGLE(t):
+    r'//.*'
+    pass  # Ignorar comentario
+
+# Comentarios multilínea
+def t_COMMENT_MULTI(t):
+    r'/\\*[\\s\\S]*?\\*/'
+    # Contar saltos de línea dentro del comentario
+    t.lexer.lineno += t.value.count('\\n')
+
+# Saltos de línea
 def t_newline(t):
-    r'\n+'
+    r'\\n+'
     t.lexer.lineno += len(t.value)
 
+# Manejo de errores genéricos
 def t_error(t):
     col = find_column(t.lexpos)
     lexical_errors.append(
-        f"[Error Léxico] Línea {t.lineno}, col {col}: '{t.value[0]}'"
+        f"[Error Léxico] Línea {t.lineno}, col {col}: Carácter ilegal '{t.value[0]}'"
     )
     t.lexer.skip(1)
 
-# Construcción del lexer
-lexer = lex.lex()
+# ====================================
+# CONSTRUCCIÓN DEL LEXER
+# ====================================
 
-__all__ = ['tokens', 'lexer', 'lexical_errors', 'set_source']
+lexer = lex.lex(debug=True)
+
+# ====================================
+# EXPORTACIONES
+# ====================================
+
+__all__ = ['tokens', 'lexer', 'lexical_errors', 'set_source', 'find_column', 'reserved']
