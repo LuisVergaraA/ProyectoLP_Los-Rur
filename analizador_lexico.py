@@ -68,6 +68,39 @@ t_EQUAL = r'='
 
 
 # SECCIÓN INTEGRANTE 2
+reserved_integrante2 = {
+    'while'  : 'WHILE',
+    'println': 'PRINTLN',
+    'true'   : 'TRUE',
+    'false'  : 'FALSE',
+}
+
+tokens_integrante2 = [
+    'LT',      # 
+    'LTE',     # <=
+    'GT',      # >
+    'GTE',     # >=
+    'EQEQ',    # ==
+    'NEQ',     # !=
+    'AND',     # &&
+    'OR',      # ||
+    'BANG',    # !
+]
+
+# Operadores multi-carácter (orden importante)
+t_AND  = r'&&'
+t_OR   = r'\|\|'
+t_EQEQ = r'=='
+t_NEQ  = r'!='
+t_LTE  = r'<='
+t_GTE  = r'>='
+
+# Operadores simples
+t_LT   = r'<'
+t_GT   = r'>'
+t_BANG = r'!'
+
+# FIN SECCIÓN INTEGRANTE 2
 
 
 # SECCIÓN INTEGRANTE 3
