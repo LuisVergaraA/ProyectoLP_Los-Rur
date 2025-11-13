@@ -3,7 +3,7 @@
 
 ## Equipo
 - Integrante 1: Luis Vergara - LuisVergaraA
-- Integrante 2: Johao Dorado -   
+- Integrante 2: Johao Dorado - johaodorado 
 - Integrante 3: Luis Roca - LuisRoca09
 
 ## Estado
