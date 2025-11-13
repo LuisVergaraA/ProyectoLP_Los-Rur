@@ -153,20 +153,20 @@ tokens_integrante3 = [
 ]
 
 # Delimitadores
-t_LPAREN = r'\\('
-t_RPAREN = r'\\)'
-t_LBRACE = r'\\{'
-t_RBRACE = r'\\}'
-t_LBRACKET = r'\\['
-t_RBRACKET = r'\\]'
+t_LPAREN = r'\('
+t_RPAREN = r'\)'
+t_LBRACE = r'\{'
+t_RBRACE = r'\}'
+t_LBRACKET = r'\['
+t_RBRACKET = r'\]'
 t_SEMICOLON = r';'
 t_COMMA = r','
-t_DOT = r'\\.'
+t_DOT = r'\.'
 t_COLON = r':'
 
 # Literales (funciones para orden de prioridad)
 def t_DOUBLE(t):
-    r'\\d+\\.\\d+'
+    r'\d+\.\d+'
     try:
         t.value = float(t.value)
     except ValueError:
@@ -174,7 +174,7 @@ def t_DOUBLE(t):
     return t
 
 def t_INT(t):
-    r'\\d+'
+    r'\d+'
     try:
         t.value = int(t.value)
     except ValueError:
@@ -248,7 +248,7 @@ tokens = (
 # ====================================
 
 # Ignorar espacios y tabulaciones
-t_ignore = ' \\t'
+t_ignore = ' \t\r'
 
 # Comentarios de línea
 def t_COMMENT_SINGLE(t):
@@ -263,7 +263,7 @@ def t_COMMENT_MULTI(t):
 
 # Saltos de línea
 def t_newline(t):
-    r'\\n+'
+    r'\n+'
     t.lexer.lineno += len(t.value)
 
 # Manejo de errores genéricos
