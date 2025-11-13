@@ -67,38 +67,51 @@ t_EQUAL = r'='
 # FIN SECCIÓN INTEGRANTE 1
 
 
-# SECCIÓN INTEGRANTE 2
+# SECCIÓN INTEGRANTE 2: Luis Roca - LuisRoca09
 reserved_integrante2 = {
     'while'  : 'WHILE',
-    'println': 'PRINTLN',
+    'for'    : 'FOR',
+    'when'   : 'WHEN',
+    'in'     : 'IN',
+    'is'     : 'IS',
     'true'   : 'TRUE',
     'false'  : 'FALSE',
+    'null'   : 'NULL',
+    'println': 'PRINTLN',
 }
 
+# Tokens operadores relacionales y lógicos 
 tokens_integrante2 = [
-    'LT',      # 
-    'LTE',     # <=
-    'GT',      # >
-    'GTE',     # >=
-    'EQEQ',    # ==
-    'NEQ',     # !=
-    'AND',     # &&
-    'OR',      # ||
-    'BANG',    # !
+    # Relacionales
+    'LT',            # 
+    'GT',            # >
+    'LTE',           # <=
+    'GTE',           # >=
+    'EQEQ',          # ==
+    'NEQ',           # !=
+    
+    # Lógicos
+    'AND',           # &&
+    'OR',            # ||
+    'BANG',          # !
+    
+    # Elvis operator
+    'ELVIS',         # ?:
 ]
 
-# Operadores multi-carácter (orden importante)
-t_AND  = r'&&'
-t_OR   = r'\|\|'
+# Reglas de tokens 
+t_LTE = r'<='
+t_GTE = r'>='
 t_EQEQ = r'=='
-t_NEQ  = r'!='
-t_LTE  = r'<='
-t_GTE  = r'>='
+t_NEQ = r'!='
+t_AND = r'&&'
+t_OR = r'\|\|'
+t_ELVIS = r'\?:'
 
-# Operadores simples
-t_LT   = r'<'
-t_GT   = r'>'
+t_LT = r'<'
+t_GT = r'>'
 t_BANG = r'!'
+
 
 # FIN SECCIÓN INTEGRANTE 2
 
