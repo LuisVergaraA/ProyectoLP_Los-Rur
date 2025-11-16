@@ -83,18 +83,9 @@ fun estructurasDatos() {
 }
 
 
-// ======================================================================
-// ALGORITMO DE PRUEBA - INTEGRANTE 3
+
 // Reglas sintácticas implementadas:
 // - Definición de clases
-// - Propiedades de clase (val, var)
-// - Métodos de clase
-// - Object declarations (singleton)
-// - Uso de this
-// - Acceso a miembros con punto (.)
-// Usuario: [tu_usuario_git]
-// ======================================================================
-
 // ============================================
 // PRUEBA 1: CLASES BÁSICAS
 // ============================================
@@ -334,3 +325,6 @@ fun usarClases() {
 class ListaNumeros(val capacidad: Int) {
     var elementos = [];
     var tamano = 0;
+
+}
+
