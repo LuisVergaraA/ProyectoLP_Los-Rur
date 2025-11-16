@@ -212,9 +212,255 @@ def p_expr_ident(p):
 
 # FIN SECCIÓN INTEGRANTE 1
 
-#integrante 2
+
+# ===========================================
+# SECCION INTEGRANTE 2: Control de Flujo
+# Responsable: [Luis Roca/LuisRoca09]
 
 
+# --- Estructura de control: while ---
+def p_while_stmt(p):
+    '''while_stmt : WHILE LPAREN expr RPAREN block'''
+    p[0] = ('while', p[3], p[5])
+
+# --- Estructura de control: for con rangos ---
+def p_for_stmt(p):
+    '''for_stmt : FOR LPAREN IDENT IN expr RPAREN block'''
+    var_name = p[3]
+    # El iterador se declara implícitamente
+    symbol_table[var_name] = {'type': 'Int', 'mutable': False}
+    p[0] = ('for', var_name, p[5], p[7])
+
+# --- Operador de rango ---
+def p_expr_range(p):
+    '''expr : expr RANGE expr'''
+    p[0] = ('range', p[1], p[3])
+
+# --- Operador IN ---
+def p_expr_in(p):
+    '''expr : expr IN expr'''
+    p[0] = ('in', p[1], p[3])
+
+# --- Operador IS ---
+def p_expr_is(p):
+    '''expr : expr IS IDENT'''
+    p[0] = ('is', p[1], p[3])
+
+# --- Operador Elvis ---
+def p_expr_elvis(p):
+    '''expr : expr ELVIS expr'''
+    p[0] = ('elvis', p[1], p[3])
+
+# --- Estructura de control: when ---
+def p_when_stmt(p):
+    '''when_stmt : WHEN LPAREN expr RPAREN LBRACE when_branches RBRACE'''
+    p[0] = ('when', p[3], p[6])
+
+def p_when_branches(p):
+    '''when_branches : when_branches when_branch
+                     | when_branch'''
+    if len(p) == 3:
+        p[0] = p[1] + [p[2]]
+    else:
+        p[0] = [p[1]]
+
+def p_when_branch(p):
+    '''when_branch : expr ARROW block
+                   | ELSE ARROW block'''
+    if p[1] == 'else':
+        p[0] = ('when_else', p[3])
+    else:
+        p[0] = ('when_case', p[1], p[3])
+
+# --- Función con parámetros y tipo de retorno ---
+def p_function_def_params(p):
+    '''function_def : FUN IDENT LPAREN params RPAREN COLON IDENT block'''
+    name = p[2]
+    params = p[4]
+    ret_type = p[7]
+    line = p.lineno(2)
+    
+    if name in function_table:
+        add_sem_error(line, f"Función '{name}' ya fue declarada")
+    else:
+        function_table[name] = {'ret': ret_type, 'params': params}
+    
+    p[0] = ('fun_def_typed', name, params, ret_type, p[8])
+
+def p_params(p):
+    '''params : params COMMA param
+              | param
+              | empty'''
+    if len(p) == 4:
+        p[0] = p[1] + [p[3]]
+    elif p[1]:
+        p[0] = [p[1]]
+    else:
+        p[0] = []
+
+def p_param(p):
+    '''param : IDENT COLON IDENT'''
+    p[0] = ('param', p[1], p[3])
+
+# --- Return statement ---
+def p_return_stmt(p):
+    '''return_stmt : RETURN expr SEMICOLON
+                   | RETURN SEMICOLON'''
+    if len(p) == 4:
+        p[0] = ('return', p[2])
+    else:
+        p[0] = ('return', None)
+
+# --- Llamada a función ---
+def p_func_call_stmt(p):
+    '''func_call_stmt : func_call SEMICOLON'''
+    p[0] = p[1]
+
+def p_func_call(p):
+    '''func_call : IDENT LPAREN args RPAREN'''
+    name = p[1]
+    line = p.lineno(1)
+    
+    if name not in function_table and name != 'println':
+        add_sem_error(line, f"Función '{name}' no declarada")
+    
+    p[0] = ('call', name, p[3])
+
+def p_expr_func_call(p):
+    '''expr : func_call'''
+    p[0] = p[1]
+
+def p_args(p):
+    '''args : args COMMA expr
+            | expr
+            | empty'''
+    if len(p) == 4:
+        p[0] = p[1] + [p[3]]
+    elif p[1]:
+        p[0] = [p[1]]
+    else:
+        p[0] = []
+
+# --- Lambda con arrow ---
+def p_expr_lambda(p):
+    '''expr : LBRACE params ARROW expr RBRACE'''
+    p[0] = ('lambda', p[2], p[4])
+
+# FIN SECCIÓN INTEGRANTE 2 
+
+#integrante 3
+# ===========================================
+# SECCIÓN INTEGRANTE 3: POO (Clases y Objetos)
+# Responsable: [Johao Dorado/johaodorado]
+# ===========================================
+
+# --- Definición de clase ---
+def p_class_def(p):
+    '''class_def : CLASS IDENT LPAREN class_params RPAREN class_body'''
+    name = p[2]
+    params = p[4]
+    body = p[6]
+    line = p.lineno(2)
+    
+    if name in class_table:
+        add_sem_error(line, f"Clase '{name}' ya fue declarada")
+    else:
+        class_table[name] = {'params': params, 'methods': []}
+    
+    p[0] = ('class', name, params, body)
+
+def p_class_params(p):
+    '''class_params : class_params COMMA class_param
+                    | class_param
+                    | empty'''
+    if len(p) == 4:
+        p[0] = p[1] + [p[3]]
+    elif p[1]:
+        p[0] = [p[1]]
+    else:
+        p[0] = []
+
+def p_class_param(p):
+    '''class_param : VAL IDENT COLON IDENT
+                   | VAR IDENT COLON IDENT'''
+    p[0] = ('class_param', p[1], p[2], p[4])
+
+def p_class_body(p):
+    '''class_body : LBRACE class_members RBRACE
+                  | empty'''
+    if len(p) == 4:
+        p[0] = p[2]
+    else:
+        p[0] = []
+
+def p_class_members(p):
+    '''class_members : class_members class_member
+                     | class_member
+                     | empty'''
+    if len(p) == 3:
+        p[0] = p[1] + [p[2]] if p[1] else [p[2]]
+    elif p[1]:
+        p[0] = [p[1]]
+    else:
+        p[0] = []
+
+def p_class_member(p):
+    '''class_member : property
+                    | method'''
+    p[0] = p[1]
+
+# --- Propiedades de clase ---
+def p_property(p):
+    '''property : VAL IDENT COLON IDENT EQUAL expr SEMICOLON
+                | VAR IDENT COLON IDENT EQUAL expr SEMICOLON
+                | VAL IDENT EQUAL expr SEMICOLON
+                | VAR IDENT EQUAL expr SEMICOLON'''
+    if len(p) == 8:
+        p[0] = ('property', p[1], p[2], p[4], p[6])
+    else:
+        p[0] = ('property', p[1], p[2], None, p[4])
+
+# --- Métodos de clase ---
+def p_method(p):
+    '''method : FUN IDENT LPAREN params RPAREN block
+              | FUN IDENT LPAREN params RPAREN COLON IDENT block'''
+    name = p[2]
+    params = p[4]
+    
+    if len(p) == 7:
+        p[0] = ('method', name, params, 'Unit', p[6])
+    else:
+        p[0] = ('method', name, params, p[7], p[8])
+
+# --- Object declaration (singleton) ---
+def p_class_def_object(p):
+    '''class_def : OBJECT IDENT class_body'''
+    name = p[2]
+    body = p[3]
+    line = p.lineno(2)
+    
+    if name in class_table:
+        add_sem_error(line, f"Object '{name}' ya fue declarado")
+    else:
+        class_table[name] = {'type': 'object', 'members': body}
+    
+    p[0] = ('object', name, body)
+
+# --- Acceso a miembros con THIS ---
+def p_expr_this(p):
+    '''expr : THIS DOT IDENT'''
+    p[0] = ('member_access', 'this', p[3])
+
+# --- Acceso a miembros de objetos ---
+def p_expr_member_access(p):
+    '''expr : expr DOT IDENT'''
+    p[0] = ('member_access', p[1], p[3])
+
+# --- Instanciación de objetos ---
+def p_expr_new_object(p):
+    '''expr : IDENT LPAREN args RPAREN'''
+    # Puede ser llamada a función o constructor
+    p[0] = ('call', p[1], p[3])
 
 
 #integrante 3
