@@ -242,3 +242,57 @@ if (!(x == 0) && (y != 0)) {
     println(division);
 }
 
+// AVANCE 3: PRUEBAS SEMÁNTICAS 
+
+// Prueba 1: Uso de variable no declarada
+fun errorVariableNoDeclarada() {
+    println(variableInexistente);  // ERROR: variable no declarada
+}
+
+// Prueba 2: Reasignación de val
+fun errorReasignacionVal() {
+    val constante = 100;
+    constante = 200;  // ERROR: val es inmutable
+}
+
+// Prueba 3: Variable usada antes de inicializar
+fun errorUsoSinInicializar() {
+    var x;
+    println(x);  // ERROR: usada antes de inicializar
+    x = 10;
+}
+
+// Prueba 4: Redeclaración de variable
+fun errorRedeclaracion() {
+    val nombre = "Juan";
+    val nombre = "Pedro";  // ERROR: redeclaración
+}
+
+// Prueba 5: Múltiples errores de inmutabilidad
+fun errorMultiplesVal() {
+    val a = 10;
+    val b = 20;
+    val c = 30;
+    
+    a = 11;  // ERROR: a es inmutable
+    b = 21;  // ERROR: b es inmutable
+    c = 31;  // ERROR: c es inmutable
+}
+
+// Prueba 6: Variables correctas (sin errores)
+fun variablesCorrectas() {
+    var x = 10;
+    x = 20;  // OK: x es var
+    x = 30;  // OK
+    
+    val y = 100;
+    // No se reasigna y
+    
+    println(x);  // OK: x está declarada e inicializada
+    println(y);  // OK: y está declarada e inicializada
+}
+
+// Prueba 7: val sin inicialización
+fun errorValSinInicializar() {
+    val sinValor;  // ERROR: val debe inicializarse
+}
