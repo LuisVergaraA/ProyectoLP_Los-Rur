@@ -136,3 +136,112 @@ val multiplicarLambda = { x: Int, y: Int -> x * y }
 
 val esParLambda = { num: Int -> num % 2 == 0 }
 val esMayorLambda = { a: Int, b: Int -> a > b }
+
+
+// AVANCE 3: PRUEBAS SEMÁNTICAS 
+
+
+// Prueba 1: Llamada a función no declarada
+fun errorFuncionNoDeclarada() {
+    funcionInexistente();  // ERROR: función no declarada
+}
+
+// Prueba 2: Llamada antes de declaración
+fun errorLlamadaAntes() {
+    funcionTarde();  // ERROR: función no declarada aún
+}
+
+fun funcionTarde() {
+    println("Tardía");
+}
+
+// Prueba 3: Inconsistencia en tipo de retorno
+fun errorRetornoInconsistente(): Int {
+    if (true) {
+        return 42;        // OK: Int
+    } else {
+        return "texto";   // ERROR: String no es Int
+    }
+}
+
+// Prueba 4: Return sin valor cuando se espera tipo
+fun errorRetornoVacio(): Int {
+    return;  // ERROR: debe retornar Int
+}
+
+// Prueba 5: Return con valor cuando es Unit
+fun errorRetornoSobrante() {
+    return 42;  // ERROR: función es Unit, no debe retornar valor
+}
+
+// Prueba 6: Número incorrecto de argumentos
+fun sumar(a: Int, b: Int): Int {
+    return a + b;
+}
+
+fun errorArgumentos() {
+    val resultado1 = sumar(10);        // ERROR: faltan argumentos
+    val resultado2 = sumar(10, 20, 30); // ERROR: demasiados argumentos
+}
+
+// Prueba 7: Funciones correctas (sin errores)
+fun funcionCorrecta1(): Int {
+    return 42;  // OK
+}
+
+fun funcionCorrecta2(x: Int, y: Int): Int {
+    if (x > y) {
+        return x;  // OK: Int
+    } else {
+        return y;  // OK: Int
+    }
+}
+
+fun funcionCorrecta3() {
+    println("Sin retorno");  // OK: Unit implícito
+}
+
+// Prueba 8: Return fuera de función
+val x = 10;
+return x;  // ERROR: return fuera de función
+
+// Prueba 9: Múltiples returns inconsistentes
+fun errorMultiplesReturns(): Int {
+    val condicion = true;
+    
+    if (condicion) {
+        return 10;        // OK: Int
+    }
+    
+    if (!condicion) {
+        return 20;        // OK: Int
+    }
+    
+    return "texto";       // ERROR: String no es Int
+}
+
+// Prueba Semántica 10: Redeclaración de función
+fun miFuncion(): Int {
+    return 1;
+}
+
+fun miFuncion(): Int {  // ERROR: función ya declarada
+    return 2;
+}
+
+// Prueba Semántica 11: Función llamando a otra correctamente
+fun multiplicar(a: Int, b: Int): Int {
+    return a * b;
+}
+
+fun calcularArea(base: Int, altura: Int): Int {
+    return multiplicar(base, altura);  // OK: multiplicar está declarada
+}
+
+// Prueba Semántica 12: Casos mixtos con funciones
+fun casosMixtosFunciones() {
+    val resultado1 = sumar(5, 10);           // OK
+    val resultado2 = funcionInexistente2();  // ERROR: no declarada
+    
+    println(resultado1);  // OK
+}

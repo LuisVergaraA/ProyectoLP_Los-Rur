@@ -68,6 +68,7 @@ t_EQUAL = r'='
 
 
 # SECCIÓN INTEGRANTE 2: Luis Roca - LuisRoca09
+
 reserved_integrante2 = {
     'while'  : 'WHILE',
     'for'    : 'FOR',
@@ -111,6 +112,8 @@ t_ELVIS = r'\?:'
 t_LT = r'<'
 t_GT = r'>'
 t_BANG = r'!'
+
+
 
 
 # FIN SECCIÓN INTEGRANTE 2
