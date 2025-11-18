@@ -2,19 +2,44 @@ import ply.yacc as yacc
 from analizador_lexico import tokens, lexer, lexical_errors, set_source, find_column
 
 # ESTADO / ESTRUCTURAS
-symbol_table = {}  # nombre -> {'type': tipo, 'mutable': bool}
-function_table = {}  # nombre -> {'ret': tipo_retorno}
-class_table = {}  # nombre -> {'properties': [], 'methods': []}
 
+# Tabla de símbolos: nombre -> {'type': tipo, 'mutable': bool, 'initialized': bool}
+symbol_table = {}
+
+# Tabla de funciones: nombre -> {'ret': tipo_retorno, 'params': [...], 'returns': [tipos]}
+function_table = {}
+
+# Tabla de clases: nombre -> {'properties': {...}, 'methods': {...}}
+class_table = {}
+
+# Contexto actual (para saber si estamos dentro de una función/clase)
+current_function = None
+current_class = None
+
+# Errores
 semantic_errors = []
 syntactic_errors = []
 
 # UTILIDADES
+
 def add_sem_error(line, msg):
     """Agregar error semántico"""
     semantic_errors.append(f"[Error Semántico] Línea {line}: {msg}")
 
-# PRECEDENCIA DE OPERADORES
+def numeric(t):
+    """Verificar si un tipo es numérico"""
+    return t in ('Int', 'Double')
+
+def promote_type(t1, t2):
+    """Promoción de tipos en operaciones"""
+    if t1 == t2:
+        return t1
+    if {'Int', 'Double'} == {t1, t2}:
+        return 'Double'
+    return 'Unknown'
+
+# PRECEDENCIA
+
 precedence = (
     ('left', 'OR'),
     ('left', 'AND'),
@@ -35,7 +60,7 @@ def p_stmts(p):
     '''stmts : stmts stmt
              | stmt'''
     if len(p) == 3:
-        p[0] = p[1] + [p[2]]
+        p[0] = p[1] + [p[2]] if isinstance(p[1], list) else [p[1], p[2]]
     else:
         p[0] = [p[1]]
 
@@ -64,13 +89,24 @@ def p_decl_init(p):
     mutable = (p[1] == 'var')
     name = p[2]
     line = p.lineno(2)
+    expr_type = p[4]
     
+    # REGLA SEMÁNTICA 1: No permitir redeclaración
     if name in symbol_table:
         add_sem_error(line, f"Variable '{name}' ya fue declarada")
     else:
-        symbol_table[name] = {'type': 'Unknown', 'mutable': mutable}
+        # Inferir tipo de la expresión
+        if expr_type == 'Unknown':
+            add_sem_error(line, f"No se puede inferir tipo para '{name}'")
+        
+        symbol_table[name] = {
+            'type': expr_type,
+            'mutable': mutable,
+            'initialized': True,
+            'line': line
+        }
     
-    p[0] = ('decl', p[1], name, p[4])
+    p[0] = ('decl', p[1], name, expr_type)
 
 def p_decl_no_init(p):
     '''decl : VAL IDENT SEMICOLON
@@ -79,139 +115,72 @@ def p_decl_no_init(p):
     name = p[2]
     line = p.lineno(2)
     
+    # REGLA SEMÁNTICA 1: val debe inicializarse
     if not mutable:
-        add_sem_error(line, f"'val {name}' debe ser inicializada")
+        add_sem_error(line, f"'val {name}' debe ser inicializada al declararse")
     
-    if name not in symbol_table:
-        symbol_table[name] = {'type': 'Unknown', 'mutable': mutable}
+    if name in symbol_table:
+        add_sem_error(line, f"Variable '{name}' ya fue declarada")
+    else:
+        symbol_table[name] = {
+            'type': 'Unknown',
+            'mutable': mutable,
+            'initialized': False,
+            'line': line
+        }
     
     p[0] = ('decl_no_init', p[1], name)
 
-# Asignación
+# --- Asignación ---
 def p_assign(p):
     '''assign : IDENT EQUAL expr SEMICOLON'''
     name = p[1]
     line = p.lineno(1)
+    expr_type = p[3]
     
+    # REGLA SEMÁNTICA 1: Variable debe estar declarada
     if name not in symbol_table:
         add_sem_error(line, f"Variable '{name}' no declarada")
-    elif not symbol_table[name]['mutable']:
-        add_sem_error(line, f"'{name}' es inmutable (val)")
+        p[0] = ('assign', name, expr_type)
+        return
     
-    p[0] = ('assign', name, p[3])
-
-# Impresión
-def p_print(p):
-    '''print : PRINTLN LPAREN expr RPAREN SEMICOLON'''
-    p[0] = ('println', p[3])
-
-# Estructura de control: if-else
-def p_if_stmt(p):
-    '''if_stmt : IF LPAREN expr RPAREN block
-               | IF LPAREN expr RPAREN block ELSE block
-               | IF LPAREN expr RPAREN block ELSE if_stmt'''
-    if len(p) == 6:
-        p[0] = ('if', p[3], p[5])
-    else:
-        p[0] = ('if_else', p[3], p[5], p[7])
-
-def p_block(p):
-    '''block : LBRACE stmts RBRACE'''
-    p[0] = ('block', p[2])
-
-# Estructura de datos: Lista literal
-def p_expr_list_lit(p):
-    '''expr : LBRACKET list_elems_opt RBRACKET'''
-    p[0] = ('list', p[2])
-
-def p_list_elems_opt(p):
-    '''list_elems_opt : list_elems
-                      | empty'''
-    p[0] = p[1] if p[1] else []
-
-def p_list_elems(p):
-    '''list_elems : expr
-                  | list_elems COMMA expr'''
-    if len(p) == 2:
-        p[0] = [p[1]]
-    else:
-        p[0] = p[1] + [p[3]]
-
-# Función básica
-def p_function_def_simple(p):
-    '''function_def : FUN IDENT LPAREN RPAREN block'''
-    name = p[2]
-    line = p.lineno(2)
+    sym = symbol_table[name]
     
-    if name in function_table:
-        add_sem_error(line, f"Función '{name}' ya fue declarada")
-    else:
-        function_table[name] = {'ret': 'Unit', 'params': []}
+    # REGLA SEMÁNTICA 2: Verificar inmutabilidad (VAL)
+    if not sym['mutable']:
+        add_sem_error(line, f"'{name}' es inmutable (val); reasignación no permitida")
     
-    p[0] = ('fun_def', name, [], p[5])
+    # Verificar compatibilidad de tipos
+    if sym['type'] == 'Unknown':
+        # Primera asignación para var sin inicializar
+        symbol_table[name]['type'] = expr_type
+        symbol_table[name]['initialized'] = True
+    elif sym['type'] != expr_type and expr_type != 'Unknown':
+        add_sem_error(line, f"Tipo incompatible en asignación a '{name}': esperado {sym['type']}, recibido {expr_type}")
+    
+    p[0] = ('assign', name, expr_type)
 
-# Expresiones aritméticas
-def p_expr_binop(p):
-    '''expr : expr PLUS expr
-            | expr MINUS expr
-            | expr STAR expr
-            | expr SLASH expr
-            | expr PERCENT expr'''
-    p[0] = ('binop', p[2], p[1], p[3])
-
-# Expresiones lógicas
-def p_expr_logical(p):
-    '''expr : expr AND expr
-            | expr OR expr'''
-    p[0] = ('logical', p[2], p[1], p[3])
-
-# Expresiones relacionales
-def p_expr_relational(p):
-    '''expr : expr LT expr
-            | expr LTE expr
-            | expr GT expr
-            | expr GTE expr
-            | expr EQEQ expr
-            | expr NEQ expr'''
-    p[0] = ('relational', p[2], p[1], p[3])
-
-# Expresión unaria
-def p_expr_unary_not(p):
-    '''expr : BANG expr'''
-    p[0] = ('unary', '!', p[2])
-
-def p_expr_unary_minus(p):
-    '''expr : MINUS expr %prec UMINUS'''
-    p[0] = ('unary', '-', p[2])
-
-# Expresión entre paréntesis
-def p_expr_group(p):
-    '''expr : LPAREN expr RPAREN'''
-    p[0] = p[2]
-
-# Literales
-def p_expr_literals(p):
-    '''expr : INT
-            | DOUBLE
-            | STRING
-            | CHAR
-            | TRUE
-            | FALSE
-            | NULL'''
-    p[0] = ('literal', p[1])
-
+# --- Expresión: Identificador ---
 def p_expr_ident(p):
     '''expr : IDENT'''
     name = p[1]
     line = p.lineno(1)
     
+    # REGLA SEMÁNTICA 1: Verificar que la variable esté declarada
     if name not in symbol_table:
         add_sem_error(line, f"Variable '{name}' no declarada")
+        p[0] = 'Unknown'
+        return
     
-    p[0] = ('ident', name)
+    sym = symbol_table[name]
+    
+    # REGLA SEMÁNTICA 1: Verificar que esté inicializada
+    if not sym['initialized']:
+        add_sem_error(line, f"Variable '{name}' usada antes de inicializar")
+    
+    p[0] = sym['type']
 
 # FIN SECCIÓN INTEGRANTE 1
-
 
 # ===========================================
 # SECCION INTEGRANTE 2: Control de Flujo
@@ -579,17 +548,178 @@ def p_expr_new_object(p):
 
 # FIN SECCIÓN INTEGRANTE 3
 # ===========================================
-# =========================
-# REGLAS AUXILIARES
-# =========================
 
+# Impresión
+def p_print(p):
+    '''print : PRINTLN LPAREN expr RPAREN SEMICOLON'''
+    p[0] = ('println', p[3])
+
+# if-else 
+def p_if_stmt(p):
+    '''if_stmt : IF LPAREN expr RPAREN block
+               | IF LPAREN expr RPAREN block ELSE block
+               | IF LPAREN expr RPAREN block ELSE if_stmt'''
+    cond_type = p[3]
+    line = p.lineno(1)
+    
+    if cond_type != 'Boolean' and cond_type != 'Unknown':
+        add_sem_error(line, "Condición de 'if' debe ser Boolean")
+    
+    if len(p) == 6:
+        p[0] = ('if', p[3], p[5])
+    else:
+        p[0] = ('if_else', p[3], p[5], p[7])
+
+def p_block(p):
+    '''block : LBRACE stmts RBRACE'''
+    p[0] = ('block', p[2])
+
+# While 
+def p_while_stmt(p):
+    '''while_stmt : WHILE LPAREN expr RPAREN block'''
+    cond_type = p[3]
+    line = p.lineno(1)
+    
+    if cond_type != 'Boolean' and cond_type != 'Unknown':
+        add_sem_error(line, "Condición de 'while' debe ser Boolean")
+    
+    p[0] = ('while', p[3], p[5])
+
+# For
+def p_for_stmt(p):
+    '''for_stmt : FOR LPAREN IDENT IN expr RPAREN block'''
+    var_name = p[3]
+    # Declarar implícitamente la variable del iterador
+    symbol_table[var_name] = {
+        'type': 'Int',
+        'mutable': False,
+        'initialized': True,
+        'line': p.lineno(3)
+    }
+    p[0] = ('for', var_name, p[5], p[7])
+
+# When
+def p_when_stmt(p):
+    '''when_stmt : WHEN LPAREN expr RPAREN LBRACE when_branches RBRACE'''
+    p[0] = ('when', p[3], p[6])
+
+def p_when_branches(p):
+    '''when_branches : when_branches when_branch
+                     | when_branch'''
+    if len(p) == 3:
+        p[0] = p[1] + [p[2]]
+    else:
+        p[0] = [p[1]]
+
+def p_when_branch(p):
+    '''when_branch : expr ARROW block
+                   | ELSE ARROW block'''
+    if p[1] == 'else':
+        p[0] = ('when_else', p[3])
+    else:
+        p[0] = ('when_case', p[1], p[3])
+
+# Operadores especiales
+def p_expr_range(p):
+    '''expr : expr RANGE expr'''
+    p[0] = 'Range'
+
+def p_expr_in(p):
+    '''expr : expr IN expr'''
+    p[0] = 'Boolean'
+
+def p_expr_is(p):
+    '''expr : expr IS IDENT'''
+    p[0] = 'Boolean'
+
+def p_expr_elvis(p):
+    '''expr : expr ELVIS expr'''
+    left_type = p[1]
+    right_type = p[3]
+    # Elvis retorna el tipo no-nulo
+    p[0] = right_type if left_type == 'Unknown' else left_type
+
+# Lambda
+def p_expr_lambda(p):
+    '''expr : LBRACE params ARROW expr RBRACE'''
+    p[0] = 'Function'
+
+# Listas
+def p_expr_list_lit(p):
+    '''expr : LBRACKET list_elems_opt RBRACKET'''
+    p[0] = 'List'
+
+def p_list_elems_opt(p):
+    '''list_elems_opt : list_elems
+                      | empty'''
+    p[0] = p[1] if p[1] else []
+
+def p_list_elems(p):
+    '''list_elems : expr
+                  | list_elems COMMA expr'''
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = p[1] + [p[3]]
+
+# Expresiones unarias
+def p_expr_unary_not(p):
+    '''expr : BANG expr'''
+    expr_type = p[2]
+    line = p.lineno(1)
+    
+    if expr_type != 'Boolean' and expr_type != 'Unknown':
+        add_sem_error(line, f"Operador '!' requiere Boolean; recibió {expr_type}")
+    
+    p[0] = 'Boolean'
+
+def p_expr_unary_minus(p):
+    '''expr : MINUS expr %prec UMINUS'''
+    expr_type = p[2]
+    line = p.lineno(1)
+    
+    if not numeric(expr_type) and expr_type != 'Unknown':
+        add_sem_error(line, f"Operador unario '-' requiere tipo numérico; recibió {expr_type}")
+    
+    p[0] = expr_type
+
+# Paréntesis
+def p_expr_group(p):
+    '''expr : LPAREN expr RPAREN'''
+    p[0] = p[2]
+
+# Literales
+def p_expr_int(p):
+    '''expr : INT'''
+    p[0] = 'Int'
+
+def p_expr_double(p):
+    '''expr : DOUBLE'''
+    p[0] = 'Double'
+
+def p_expr_bool(p):
+    '''expr : TRUE
+            | FALSE'''
+    p[0] = 'Boolean'
+
+def p_expr_string(p):
+    '''expr : STRING'''
+    p[0] = 'String'
+
+def p_expr_char(p):
+    '''expr : CHAR'''
+    p[0] = 'Char'
+
+def p_expr_null(p):
+    '''expr : NULL'''
+    p[0] = 'Null'
+
+# Vacío
 def p_empty(p):
     '''empty :'''
     pass
 
-# =========================
 # MANEJO DE ERRORES
-# =========================
 
 def p_error(p):
     if p:
@@ -606,25 +736,27 @@ def p_error(p):
             "[Error Sintáctico] Fin de archivo inesperado"
         )
 
-# =========================
 # CONSTRUCCIÓN DEL PARSER
-# =========================
 
 parser = yacc.yacc()
 
-# =========================
 # API DE ANÁLISIS
-# =========================
+
 
 def analyze_syntax(code: str):
     """Analiza sintaxis y semántica de código MiniKotlin"""
     # Limpiar estados
+    global current_function, current_class
+    
     lexical_errors.clear()
     semantic_errors.clear()
     syntactic_errors.clear()
     symbol_table.clear()
     function_table.clear()
     class_table.clear()
+    
+    current_function = None
+    current_class = None
     
     # Configurar fuente
     set_source(code)
@@ -646,7 +778,7 @@ def analyze_syntax(code: str):
             'col': col
         })
     
-    # Análisis sintáctico
+    # Análisis sintáctico y semántico
     try:
         lexer.lineno = 1
         result = parser.parse(code, lexer=lexer)
