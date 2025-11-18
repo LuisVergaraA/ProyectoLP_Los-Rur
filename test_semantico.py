@@ -138,7 +138,8 @@ def guardar_log(usuario, resultado):
                 tipo = info.get('type', 'Unknown')
                 mut = 'var' if info.get('mutable') else 'val'
                 init = 'Sí' if info.get('initialized') else 'No'
-                f.write(f"{name:<25} {tipo:<15} {mut:<10} {init:<12}\n")
+                tipo_str = str(tipo) if not isinstance(tipo, str) else tipo
+                f.write(f"{name:<25} {tipo_str:<15} {mut:<10} {init:<12}\n")
             f.write(f"\nTotal de variables: {len(resultado['symbol_table'])}\n")
         else:
             f.write("(vacía)\n")

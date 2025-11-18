@@ -304,6 +304,92 @@ def p_func_call(p):
     
     p[0] = ('call', name, args)
 
+# === OPERADORES ARITMÉTICOS ===
+def p_expr_binop(p):
+    '''expr : expr PLUS expr
+            | expr MINUS expr
+            | expr STAR expr
+            | expr SLASH expr
+            | expr PERCENT expr'''
+    left = p[1]
+    right = p[3]
+    line = p.lineno(2)
+    
+    if not numeric(left) and left != 'Unknown':
+        add_sem_error(line, f"Operando izquierdo debe ser numérico, recibió {left}")
+    if not numeric(right) and right != 'Unknown':
+        add_sem_error(line, f"Operando derecho debe ser numérico, recibió {right}")
+    
+    p[0] = promote_type(left, right)
+
+# === OPERADORES RELACIONALES ===
+def p_expr_relational(p):
+    '''expr : expr LT expr
+            | expr GT expr
+            | expr LTE expr
+            | expr GTE expr
+            | expr EQEQ expr
+            | expr NEQ expr'''
+    left = p[1]
+    right = p[3]
+    line = p.lineno(2)
+    
+    if left != right and left != 'Unknown' and right != 'Unknown':
+        add_sem_error(line, f"Comparación entre tipos incompatibles: {left} y {right}")
+    
+    p[0] = 'Boolean'
+
+# === OPERADORES LÓGICOS ===
+def p_expr_logical(p):
+    '''expr : expr AND expr
+            | expr OR expr'''
+    left = p[1]
+    right = p[3]
+    line = p.lineno(2)
+    
+    if left != 'Boolean' and left != 'Unknown':
+        add_sem_error(line, f"Operador lógico requiere Boolean, recibió {left}")
+    if right != 'Boolean' and right != 'Unknown':
+        add_sem_error(line, f"Operador lógico requiere Boolean, recibió {right}")
+    
+    p[0] = 'Boolean'
+
+# === OPERADORES DE ASIGNACIÓN COMPUESTA ===
+def p_assign_compound(p):
+    '''assign : IDENT PLUSEQUAL expr SEMICOLON
+              | IDENT MINUSEQUAL expr SEMICOLON'''
+    name = p[1]
+    line = p.lineno(1)
+    expr_type = p[3]
+    
+    if name not in symbol_table:
+        add_sem_error(line, f"Variable '{name}' no declarada")
+    else:
+        sym = symbol_table[name]
+        if not sym['mutable']:
+            add_sem_error(line, f"'{name}' es inmutable (val)")
+        if not numeric(sym['type']) and sym['type'] != 'Unknown':
+            add_sem_error(line, f"Operador compuesto requiere tipo numérico")
+    
+    p[0] = ('assign_compound', name, p[2], expr_type)
+
+# === INCREMENTO/DECREMENTO ===
+def p_expr_postfix(p):
+    '''expr : IDENT PLUSPLUS
+            | IDENT MINUSMINUS'''
+    name = p[1]
+    line = p.lineno(1)
+    
+    if name not in symbol_table:
+        add_sem_error(line, f"Variable '{name}' no declarada")
+    else:
+        sym = symbol_table[name]
+        if not sym['mutable']:
+            add_sem_error(line, f"'{name}' es inmutable (val)")
+        if not numeric(sym['type']) and sym['type'] != 'Unknown':
+            add_sem_error(line, f"Operador {p[2]} requiere tipo numérico")
+        p[0] = sym['type']
+
 def p_expr_func_call(p):
     '''expr : func_call'''
     # Retornar tipo de retorno de la función
@@ -441,122 +527,7 @@ def p_expr_new_object(p):
     p[0] = ('call', p[1], p[3])
 
 
-#integrante 3
-# ===========================================
-# SECCIÓN INTEGRANTE 3: POO (Clases y Objetos)
-# Responsable: [Johao Dorado/johaodorado]
-# ===========================================
 
-# --- Definición de clase ---
-def p_class_def(p):
-    '''class_def : CLASS IDENT LPAREN class_params RPAREN class_body'''
-    name = p[2]
-    params = p[4]
-    body = p[6]
-    line = p.lineno(2)
-    
-    if name in class_table:
-        add_sem_error(line, f"Clase '{name}' ya fue declarada")
-    else:
-        class_table[name] = {'params': params, 'methods': []}
-    
-    p[0] = ('class', name, params, body)
-
-def p_class_params(p):
-    '''class_params : class_params COMMA class_param
-                    | class_param
-                    | empty'''
-    if len(p) == 4:
-        p[0] = p[1] + [p[3]]
-    elif p[1]:
-        p[0] = [p[1]]
-    else:
-        p[0] = []
-
-def p_class_param(p):
-    '''class_param : VAL IDENT COLON IDENT
-                   | VAR IDENT COLON IDENT'''
-    p[0] = ('class_param', p[1], p[2], p[4])
-
-def p_class_body(p):
-    '''class_body : LBRACE class_members RBRACE
-                  | empty'''
-    if len(p) == 4:
-        p[0] = p[2]
-    else:
-        p[0] = []
-
-def p_class_members(p):
-    '''class_members : class_members class_member
-                     | class_member
-                     | empty'''
-    if len(p) == 3:
-        p[0] = p[1] + [p[2]] if p[1] else [p[2]]
-    elif p[1]:
-        p[0] = [p[1]]
-    else:
-        p[0] = []
-
-def p_class_member(p):
-    '''class_member : property
-                    | method'''
-    p[0] = p[1]
-
-# --- Propiedades de clase ---
-def p_property(p):
-    '''property : VAL IDENT COLON IDENT EQUAL expr SEMICOLON
-                | VAR IDENT COLON IDENT EQUAL expr SEMICOLON
-                | VAL IDENT EQUAL expr SEMICOLON
-                | VAR IDENT EQUAL expr SEMICOLON'''
-    if len(p) == 8:
-        p[0] = ('property', p[1], p[2], p[4], p[6])
-    else:
-        p[0] = ('property', p[1], p[2], None, p[4])
-
-# --- Métodos de clase ---
-def p_method(p):
-    '''method : FUN IDENT LPAREN params RPAREN block
-              | FUN IDENT LPAREN params RPAREN COLON IDENT block'''
-    name = p[2]
-    params = p[4]
-    
-    if len(p) == 7:
-        p[0] = ('method', name, params, 'Unit', p[6])
-    else:
-        p[0] = ('method', name, params, p[7], p[8])
-
-# --- Object declaration (singleton) ---
-def p_class_def_object(p):
-    '''class_def : OBJECT IDENT class_body'''
-    name = p[2]
-    body = p[3]
-    line = p.lineno(2)
-    
-    if name in class_table:
-        add_sem_error(line, f"Object '{name}' ya fue declarado")
-    else:
-        class_table[name] = {'type': 'object', 'members': body}
-    
-    p[0] = ('object', name, body)
-
-# --- Acceso a miembros con THIS ---
-def p_expr_this(p):
-    '''expr : THIS DOT IDENT'''
-    p[0] = ('member_access', 'this', p[3])
-
-# --- Acceso a miembros de objetos ---
-def p_expr_member_access(p):
-    '''expr : expr DOT IDENT'''
-    p[0] = ('member_access', p[1], p[3])
-
-# --- Instanciación de objetos ---
-def p_expr_new_object(p):
-    '''expr : IDENT LPAREN args RPAREN'''
-    # Puede ser llamada a función o constructor
-    p[0] = ('call', p[1], p[3])
-
-# FIN SECCIÓN INTEGRANTE 3
-# ===========================================
 
 # Impresión
 def p_print(p):
