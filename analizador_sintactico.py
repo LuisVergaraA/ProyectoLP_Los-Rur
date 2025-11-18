@@ -183,77 +183,53 @@ def p_expr_ident(p):
 # FIN SECCIÓN INTEGRANTE 1
 
 # ===========================================
-# SECCION INTEGRANTE 2: Control de Flujo
-# Responsable: [Luis Roca/LuisRoca09]
+# SECCION INTEGRANTE 2 [Luis Roca/LuisRoca09]
 
 
-# --- Estructura de control: while ---
-def p_while_stmt(p):
-    '''while_stmt : WHILE LPAREN expr RPAREN block'''
-    p[0] = ('while', p[3], p[5])
-
-# --- Estructura de control: for con rangos ---
-def p_for_stmt(p):
-    '''for_stmt : FOR LPAREN IDENT IN expr RPAREN block'''
-    var_name = p[3]
-    # El iterador se declara implícitamente
-    symbol_table[var_name] = {'type': 'Int', 'mutable': False}
-    p[0] = ('for', var_name, p[5], p[7])
-
-# --- Operador de rango ---
-def p_expr_range(p):
-    '''expr : expr RANGE expr'''
-    p[0] = ('range', p[1], p[3])
-
-# --- Operador IN ---
-def p_expr_in(p):
-    '''expr : expr IN expr'''
-    p[0] = ('in', p[1], p[3])
-
-# --- Operador IS ---
-def p_expr_is(p):
-    '''expr : expr IS IDENT'''
-    p[0] = ('is', p[1], p[3])
-
-# --- Operador Elvis ---
-def p_expr_elvis(p):
-    '''expr : expr ELVIS expr'''
-    p[0] = ('elvis', p[1], p[3])
-
-# --- Estructura de control: when ---
-def p_when_stmt(p):
-    '''when_stmt : WHEN LPAREN expr RPAREN LBRACE when_branches RBRACE'''
-    p[0] = ('when', p[3], p[6])
-
-def p_when_branches(p):
-    '''when_branches : when_branches when_branch
-                     | when_branch'''
-    if len(p) == 3:
-        p[0] = p[1] + [p[2]]
+# --- Definición de función simple ---
+def p_function_def_simple(p):
+    '''function_def : FUN IDENT LPAREN RPAREN block'''
+    global current_function
+    name = p[2]
+    line = p.lineno(2)
+    
+    # REGLA SEMÁNTICA 3: No permitir funciones duplicadas
+    if name in function_table:
+        add_sem_error(line, f"Función '{name}' ya fue declarada")
     else:
-        p[0] = [p[1]]
+        function_table[name] = {
+            'ret': 'Unit',
+            'params': [],
+            'returns': [],
+            'line': line
+        }
+    
+    current_function = None
+    p[0] = ('fun_def', name, [], 'Unit', p[5])
 
-def p_when_branch(p):
-    '''when_branch : expr ARROW block
-                   | ELSE ARROW block'''
-    if p[1] == 'else':
-        p[0] = ('when_else', p[3])
-    else:
-        p[0] = ('when_case', p[1], p[3])
-
-# --- Función con parámetros y tipo de retorno ---
+# --- Definición de función con parámetros ---
 def p_function_def_params(p):
     '''function_def : FUN IDENT LPAREN params RPAREN COLON IDENT block'''
+    global current_function
     name = p[2]
     params = p[4]
     ret_type = p[7]
     line = p.lineno(2)
     
+    # REGLA SEMÁNTICA 3: No permitir funciones duplicadas
     if name in function_table:
         add_sem_error(line, f"Función '{name}' ya fue declarada")
     else:
-        function_table[name] = {'ret': ret_type, 'params': params}
+        function_table[name] = {
+            'ret': ret_type,
+            'params': params,
+            'returns': [],
+            'line': line
+        }
     
+    # REGLA SEMÁNTICA 4: Verificar consistencia de returns (se hace en p_return_stmt)
+    
+    current_function = None
     p[0] = ('fun_def_typed', name, params, ret_type, p[8])
 
 def p_params(p):
@@ -269,16 +245,40 @@ def p_params(p):
 
 def p_param(p):
     '''param : IDENT COLON IDENT'''
-    p[0] = ('param', p[1], p[3])
+    param_name = p[1]
+    param_type = p[3]
+    p[0] = {'name': param_name, 'type': param_type}
 
 # --- Return statement ---
 def p_return_stmt(p):
     '''return_stmt : RETURN expr SEMICOLON
                    | RETURN SEMICOLON'''
+    global current_function
+    line = p.lineno(1)
+    
     if len(p) == 4:
-        p[0] = ('return', p[2])
+        return_type = p[2]
     else:
-        p[0] = ('return', None)
+        return_type = 'Unit'
+    
+    # REGLA SEMÁNTICA 4: Verificar que estamos dentro de una función
+    if current_function is None:
+        add_sem_error(line, "Return usado fuera de una función")
+    else:
+        # REGLA SEMÁNTICA 4: Registrar tipo de retorno
+        if current_function in function_table:
+            expected_type = function_table[current_function]['ret']
+            
+            # Verificar consistencia de tipo
+            if return_type != expected_type and return_type != 'Unknown':
+                if expected_type == 'Unit' and return_type != 'Unit':
+                    add_sem_error(line, f"Función '{current_function}' no debe retornar valor (tipo Unit)")
+                elif expected_type != 'Unit' and return_type == 'Unit':
+                    add_sem_error(line, f"Función '{current_function}' debe retornar {expected_type}")
+                else:
+                    add_sem_error(line, f"Tipo de retorno inconsistente: esperado {expected_type}, recibido {return_type}")
+    
+    p[0] = ('return', return_type if len(p) == 4 else None)
 
 # --- Llamada a función ---
 def p_func_call_stmt(p):
@@ -288,32 +288,41 @@ def p_func_call_stmt(p):
 def p_func_call(p):
     '''func_call : IDENT LPAREN args RPAREN'''
     name = p[1]
+    args = p[3]
     line = p.lineno(1)
     
+    # REGLA SEMÁNTICA 3: Verificar que la función esté declarada
     if name not in function_table and name != 'println':
-        add_sem_error(line, f"Función '{name}' no declarada")
+        add_sem_error(line, f"Función '{name}' no está declarada")
     
-    p[0] = ('call', name, p[3])
+    # Verificar número de argumentos (opcional, mejora)
+    if name in function_table:
+        expected_params = len(function_table[name]['params'])
+        actual_args = len(args) if args else 0
+        if expected_params != actual_args:
+            add_sem_error(line, f"Función '{name}' espera {expected_params} argumentos, recibió {actual_args}")
+    
+    p[0] = ('call', name, args)
 
 def p_expr_func_call(p):
     '''expr : func_call'''
-    p[0] = p[1]
+    # Retornar tipo de retorno de la función
+    func_name = p[1][1]  # ('call', name, args)
+    if func_name in function_table:
+        p[0] = function_table[func_name]['ret']
+    else:
+        p[0] = 'Unknown'
 
 def p_args(p):
     '''args : args COMMA expr
             | expr
             | empty'''
     if len(p) == 4:
-        p[0] = p[1] + [p[3]]
+        p[0] = p[1] + [p[3]] if p[1] else [p[3]]
     elif p[1]:
         p[0] = [p[1]]
     else:
         p[0] = []
-
-# --- Lambda con arrow ---
-def p_expr_lambda(p):
-    '''expr : LBRACE params ARROW expr RBRACE'''
-    p[0] = ('lambda', p[2], p[4])
 
 # FIN SECCIÓN INTEGRANTE 2 
 
