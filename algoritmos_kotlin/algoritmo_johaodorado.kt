@@ -328,3 +328,89 @@ class ListaNumeros(val capacidad: Int) {
 
 }
 
+
+// Avance 3
+// Reglas: Tipos en operaciones y acceso a miembros
+// ============================================
+
+// Prueba Semántica 1: Operación aritmética con tipos incompatibles
+fun errorTiposIncompatibles() {
+    val texto = "Hola";
+    val numero = 42;
+    
+    val resultado1 = texto + numero;    // ERROR: String + Int
+    val resultado2 = numero * texto;    // ERROR: Int * String
+    val resultado3 = true + 10;         // ERROR: Boolean + Int
+}
+
+// Prueba Semántica 2: Operaciones entre tipos correctos
+fun operacionesCorrectas() {
+    val a = 10;
+    val b = 20;
+    val c = 3.14;
+    
+    val suma = a + b;        // OK: Int + Int = Int
+    val resta = b - a;       // OK: Int - Int = Int
+    val multi = a * b;       // OK: Int * Int = Int
+    val div = b / a;         // OK: Int / Int = Int
+    val modulo = b % a;      // OK: Int % Int = Int
+    
+    val mixto = a + c;       // OK: Int + Double = Double
+}
+
+// Prueba Semántica 3: Comparaciones con tipos incompatibles
+fun errorComparaciones() {
+    val texto = "abc";
+    val numero = 10;
+    
+    val comp1 = texto < numero;   // ERROR: String < Int
+    val comp2 = numero > texto;   // ERROR: Int > String
+    val comp3 = true >= 5;        // ERROR: Boolean >= Int
+}
+
+// Prueba Semántica 4: Operadores lógicos con no-booleanos
+fun errorOperadoresLogicos() {
+    val x = 10;
+    val y = 20;
+    
+    val resultado1 = x && y;        // ERROR: Int && Int
+    val resultado2 = x || y;        // ERROR: Int || Int
+    val resultado3 = !x;            // ERROR: !Int
+}
+
+// Prueba Semántica 5: Acceso a miembro inexistente
+class PersonaPrueba(val nombre: String, val edad: Int) {
+    fun saludar() {
+        println(this.nombre);     // OK: nombre existe
+        println(this.apellido);   // ERROR: apellido no existe
+    }
+}
+
+// Prueba Semántica 6: Acceso a miembro en instancia
+fun errorAccesoMiembro() {
+    val persona = PersonaPrueba("Ana", 25);
+    
+    println(persona.nombre);      // OK: nombre existe
+    println(persona.edad);        // OK: edad existe
+    println(persona.direccion);   // ERROR: direccion no existe
+}
+
+// Prueba Semántica 7: This fuera de clase
+fun errorThisFueraDeClase() {
+    val valor = this.propiedad;   // ERROR: this fuera de clase
+}
+
+// Prueba Semántica 8: Clase con validaciones correctas
+class CuentaPrueba(val numero: String, var saldo: Double) {
+    fun depositar(monto: Double) {
+        this.saldo = this.saldo + monto;  // OK: saldo existe y es var
+    }
+    
+    fun obtenerSaldo(): Double {
+        return this.saldo;                 // OK: saldo existe
+    }
+    
+    fun errorMetodo() {
+        println(this.inexistente);         // ERROR: inexistente no existe
+    }
+}
