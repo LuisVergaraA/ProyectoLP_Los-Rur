@@ -1,0 +1,195 @@
+======================================================================
+ANALIZADOR SINTÁCTICO - MINIKOTLIN MEJORADO
+Usuario: LuisVergaraA
+Fecha: 26/11/2025 16:55:24
+======================================================================
+
+=== ERRORES LÉXICOS ===
+
+[Error Léxico] Línea 3, col 20: Carácter ilegal 'ó'
+[Error Léxico] Línea 3, col 37: Carácter ilegal 'á'
+[Error Léxico] Línea 3, col 20: Carácter ilegal 'ó'
+[Error Léxico] Línea 3, col 37: Carácter ilegal 'á'
+
+Total: 4
+
+======================================================================
+=== ERRORES SINTÁCTICOS ===
+
+[Error Sintáctico] Línea 3, col 8: token inesperado 'INT' con valor '1'
+[Error Sintáctico] Línea 6, col 1: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 10, col 1: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 14, col 1: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 18, col 1: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 22, col 1: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 27, col 1: token inesperado 'VAR' con valor 'var'
+[Error Sintáctico] Línea 31, col 1: token inesperado 'FUN' con valor 'fun'
+[Error Sintáctico] Línea 31, col 19: token inesperado 'LBRACE' con valor '{'
+[Error Sintáctico] Línea 33, col 5: token inesperado 'IDENT' con valor 'contador'
+[Error Sintáctico] Línea 36, col 5: token inesperado 'IDENT' con valor 'contador'
+[Error Sintáctico] Línea 46, col 5: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 48, col 5: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 54, col 1: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 58, col 1: token inesperado 'FUN' con valor 'fun'
+[Error Sintáctico] Línea 58, col 18: token inesperado 'LBRACE' con valor '{'
+[Error Sintáctico] Línea 60, col 5: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 61, col 5: token inesperado 'RETURN' con valor 'return'
+[Error Sintáctico] Línea 68, col 5: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 69, col 5: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 71, col 5: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 72, col 5: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 73, col 5: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 74, col 5: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 76, col 5: token inesperado 'RETURN' con valor 'return'
+[Error Sintáctico] Línea 81, col 21: token inesperado 'COLON' con valor ':'
+[Error Sintáctico] Línea 82, col 25: token inesperado 'COLON' con valor ':'
+[Error Sintáctico] Línea 87, col 1: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 93, col 5: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 94, col 5: token inesperado 'VAR' con valor 'var'
+[Error Sintáctico] Línea 95, col 5: token inesperado 'IDENT' con valor 'z'
+[Error Sintáctico] Línea 103, col 15: token inesperado 'IF' con valor 'if'
+[Error Sintáctico] Línea 226, col 16: token inesperado 'IF' con valor 'if'
+[Error Sintáctico] Línea 227, col 14: token inesperado 'IF' con valor 'if'
+
+Total: 34
+
+======================================================================
+=== ERRORES SEMÁNTICOS ===
+
+[Error Semántico] Línea 5: Variable 'a' no declarada
+[Error Semántico] Línea 5: Variable 'b' no declarada
+[Error Semántico] Línea 9: Variable 'x' no declarada
+[Error Semántico] Línea 9: Variable 'y' no declarada
+[Error Semántico] Línea 13: Variable 'm' no declarada
+[Error Semántico] Línea 13: Variable 'n' no declarada
+[Error Semántico] Línea 17: Variable 'numerador' no declarada
+[Error Semántico] Línea 17: Variable 'denominador' no declarada
+[Error Semántico] Línea 21: Variable 'a' no declarada
+[Error Semántico] Línea 21: Variable 'b' no declarada
+[Error Semántico] Línea 31: Función 'incrementos' no está declarada
+[Error Semántico] Línea 44: Variable 'numero' no declarada
+[Error Semántico] Línea 45: Variable 'numero' no declarada
+[Error Semántico] Línea 47: Variable 'numero' no declarada
+[Error Semántico] Línea 53: Variable 'x' no declarada
+[Error Semántico] Línea 53: Variable 'x' no declarada
+[Error Semántico] Línea 54: Variable 'n' no declarada
+[Error Semántico] Línea 54: Variable 'n' no declarada
+[Error Semántico] Línea 54: Variable 'n' no declarada
+[Error Semántico] Línea 58: Función 'usarRangos' no está declarada
+[Error Semántico] Línea 71: Variable 'a' no declarada
+[Error Semántico] Línea 71: Variable 'b' no declarada
+[Error Semántico] Línea 72: Variable 'a' no declarada
+[Error Semántico] Línea 72: Variable 'b' no declarada
+[Error Semántico] Línea 73: Variable 'a' no declarada
+[Error Semántico] Línea 73: Variable 'b' no declarada
+[Error Semántico] Línea 74: Variable 'a' no declarada
+[Error Semántico] Línea 74: Variable 'b' no declarada
+[Error Semántico] Línea 86: Función 'funcionInterna' no está declarada
+[Error Semántico] Línea 93: Variable 'x' no declarada
+[Error Semántico] Línea 94: Variable 'y' no declarada
+[Error Semántico] Línea 175: Comparación entre tipos incompatibles: Double y Int
+[Error Semántico] Línea 175: Comparación entre tipos incompatibles: Double y Int
+[Error Semántico] Línea 186: Variable 'a' no declarada
+[Error Semántico] Línea 186: Variable 'a' no declarada
+[Error Semántico] Línea 186: Variable 'b' no declarada
+[Error Semántico] Línea 186: Variable 'b' no declarada
+[Error Semántico] Línea 208: Comparación entre tipos incompatibles: Double y Int
+[Error Semántico] Línea 234: Comparación entre tipos incompatibles: Double y Int
+[Error Semántico] Línea 234: Comparación entre tipos incompatibles: Double y Int
+[Error Semántico] Línea 241: Variable 'division' ya fue declarada
+[Error Semántico] Línea 249: Variable 'variableInexistente' no declarada
+[Error Semántico] Línea 254: Variable 'constante' ya fue declarada
+[Error Semántico] Línea 255: 'constante' es inmutable (val); reasignación no permitida
+[Error Semántico] Línea 260: Variable 'x' ya fue declarada
+[Error Semántico] Línea 267: Variable 'nombre' ya fue declarada
+[Error Semántico] Línea 268: Variable 'nombre' ya fue declarada
+[Error Semántico] Línea 277: 'a' es inmutable (val); reasignación no permitida
+[Error Semántico] Línea 278: 'b' es inmutable (val); reasignación no permitida
+[Error Semántico] Línea 279: 'c' es inmutable (val); reasignación no permitida
+[Error Semántico] Línea 284: Variable 'x' ya fue declarada
+[Error Semántico] Línea 288: Variable 'y' ya fue declarada
+[Error Semántico] Línea 297: 'val sinValor' debe ser inicializada al declararse
+
+Total: 53
+
+======================================================================
+=== TABLA DE SÍMBOLOS ===
+
+Variable             Tipo            Mutable   
+---------------------------------------------
+constante            Int             val       
+pi                   Double          val       
+nombre               String          val       
+activo               Boolean         val       
+contador             Int             var       
+temperatura          Double          var       
+mensaje              String          var       
+esValido             Boolean         var       
+x                    Int             var       
+y                    Int             var       
+suma                 Int             val       
+resta                Int             val       
+multiplicacion       Int             val       
+division             Int             val       
+modulo               Int             val       
+resultado1           Int             val       
+resultado2           Int             val       
+resultado3           Int             val       
+resultado4           Int             val       
+complejo1            Int             val       
+complejo2            Int             val       
+negativo             Int             val       
+dobleNegativo        Int             val       
+esMayor              Boolean         val       
+esMenor              Boolean         val       
+esIgual              Boolean         val       
+esDiferente          Boolean         val       
+mayorIgual           Boolean         val       
+menorIgual           Boolean         val       
+ambosVerdaderos      Boolean         val       
+unoFalso             Boolean         val       
+condicion1           Boolean         val       
+condicion2           Boolean         val       
+alMenosUno           Boolean         val       
+ambos                Boolean         val       
+condicion3           Boolean         val       
+condicion4           Boolean         val       
+noVerdadero          Boolean         val       
+noFalso              Boolean         val       
+negacion1            Boolean         val       
+negacion2            Boolean         val       
+compleja1            Boolean         val       
+compleja2            Boolean         val       
+compleja3            Boolean         val       
+a                    Int             val       
+b                    Int             val       
+c                    Int             val       
+sinValor             Unknown         val       
+
+======================================================================
+=== TABLA DE FUNCIONES ===
+
+Función              Retorno         Parámetros
+---------------------------------------------
+errorVariableNoDeclarada Unit            0         
+errorReasignacionVal Unit            0         
+errorUsoSinInicializar Unit            0         
+errorRedeclaracion   Unit            0         
+errorMultiplesVal    Unit            0         
+variablesCorrectas   Unit            0         
+errorValSinInicializar Unit            0         
+
+======================================================================
+=== TABLA DE CLASES ===
+
+(vacía)
+
+======================================================================
+=== RESUMEN ===
+
+Tokens: 1120
+Errores léxicos: 4
+Errores sintácticos: 34
+Errores semánticos: 53
+
+❌ ANÁLISIS COMPLETADO CON 91 ERRORES

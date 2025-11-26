@@ -1,0 +1,183 @@
+======================================================================
+ANALIZADOR SINTÁCTICO - MINIKOTLIN MEJORADO
+Usuario: LuisRoca09
+Fecha: 26/11/2025 16:40:12
+======================================================================
+
+======================================================================
+=== ERRORES SINTÁCTICOS ===
+
+[Error Sintáctico] Línea 6, col 5: token inesperado 'WHILE' con valor 'while'
+[Error Sintáctico] Línea 8, col 9: token inesperado 'IDENT' con valor 'i'
+[Error Sintáctico] Línea 18, col 5: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 24, col 37: token inesperado 'LBRACE' con valor '{'
+[Error Sintáctico] Línea 26, col 5: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 27, col 5: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 28, col 5: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 29, col 5: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 30, col 5: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 32, col 5: token inesperado 'RETURN' con valor 'return'
+[Error Sintáctico] Línea 39, col 1: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 43, col 1: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 49, col 1: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 54, col 1: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 55, col 1: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 61, col 1: token inesperado 'FUN' con valor 'fun'
+[Error Sintáctico] Línea 61, col 24: token inesperado 'LBRACE' con valor '{'
+[Error Sintáctico] Línea 63, col 5: token inesperado 'WHILE' con valor 'while'
+[Error Sintáctico] Línea 65, col 9: token inesperado 'WHILE' con valor 'while'
+[Error Sintáctico] Línea 67, col 13: token inesperado 'PRINTLN' con valor 'println'
+[Error Sintáctico] Línea 69, col 9: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 71, col 5: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 79, col 5: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 80, col 5: token inesperado 'VAR' con valor 'var'
+[Error Sintáctico] Línea 82, col 5: token inesperado 'FOR' con valor 'for'
+[Error Sintáctico] Línea 84, col 5: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 94, col 13: token inesperado 'PRINTLN' con valor 'println'
+[Error Sintáctico] Línea 102, col 1: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 103, col 1: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 105, col 1: token inesperado 'FUN' con valor 'fun'
+[Error Sintáctico] Línea 105, col 18: token inesperado 'LBRACE' con valor '{'
+[Error Sintáctico] Línea 107, col 5: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 109, col 5: token inesperado 'FOR' con valor 'for'
+[Error Sintáctico] Línea 111, col 5: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 118, col 5: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 120, col 5: token inesperado 'IF' con valor 'if'
+[Error Sintáctico] Línea 122, col 5: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 125, col 5: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 127, col 5: token inesperado 'RETURN' con valor 'return'
+[Error Sintáctico] Línea 132, col 1: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 134, col 1: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 135, col 1: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 137, col 1: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 138, col 1: token inesperado 'VAL' con valor 'val'
+[Error Sintáctico] Línea 145, col 1: token inesperado 'FUN' con valor 'fun'
+[Error Sintáctico] Línea 145, col 31: token inesperado 'LBRACE' con valor '{'
+[Error Sintáctico] Línea 147, col 1: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 159, col 32: token inesperado 'COLON' con valor ':'
+[Error Sintáctico] Línea 165, col 1: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 168, col 24: token inesperado 'COLON' con valor ':'
+[Error Sintáctico] Línea 188, col 23: token inesperado 'COLON' con valor ':'
+[Error Sintáctico] Línea 190, col 1: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 209, col 28: token inesperado 'COLON' con valor ':'
+[Error Sintáctico] Línea 221, col 1: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 224, col 16: token inesperado 'COLON' con valor ':'
+[Error Sintáctico] Línea 226, col 1: token inesperado 'RBRACE' con valor '}'
+[Error Sintáctico] Línea 228, col 16: token inesperado 'COLON' con valor ':'
+[Error Sintáctico] Línea 230, col 1: token inesperado 'RBRACE' con valor '}'
+
+Total: 58
+
+======================================================================
+=== ERRORES SEMÁNTICOS ===
+
+[Error Semántico] Línea 7: Variable 'i' no declarada
+[Error Semántico] Línea 17: Variable 'numero' no declarada
+[Error Semántico] Línea 25: Variable 'a' no declarada
+[Error Semántico] Línea 26: Variable 'a' no declarada
+[Error Semántico] Línea 27: Variable 'a' no declarada
+[Error Semántico] Línea 28: Variable 'a' no declarada
+[Error Semántico] Línea 29: Variable 'a' no declarada
+[Error Semántico] Línea 30: Variable 'a' no declarada
+[Error Semántico] Línea 38: Variable 'numero' no declarada
+[Error Semántico] Línea 38: Variable 'numero' no declarada
+[Error Semántico] Línea 42: Variable 'n' no declarada
+[Error Semántico] Línea 42: Variable 'n' no declarada
+[Error Semántico] Línea 48: Variable 'valor' no declarada
+[Error Semántico] Línea 61: Función 'tablaMultiplicar' no está declarada
+[Error Semántico] Línea 66: Variable 'i' no declarada
+[Error Semántico] Línea 68: Variable 'j' no declarada
+[Error Semántico] Línea 70: Variable 'i' no declarada
+[Error Semántico] Línea 83: Variable 'suma' no declarada
+[Error Semántico] Línea 83: Variable 'num' no declarada
+[Error Semántico] Línea 86: Variable 'suma' no declarada
+[Error Semántico] Línea 93: Variable 'fila' no declarada
+[Error Semántico] Línea 105: Función 'usarRangos' no está declarada
+[Error Semántico] Línea 110: Variable 'edad' no declarada
+[Error Semántico] Línea 118: Variable 'numero' no declarada
+[Error Semántico] Línea 131: Variable 'x' no declarada
+[Error Semántico] Línea 132: Variable 'n' no declarada
+[Error Semántico] Línea 134: Variable 'a' no declarada
+[Error Semántico] Línea 134: Variable 'b' no declarada
+[Error Semántico] Línea 135: Variable 'x' no declarada
+[Error Semántico] Línea 135: Variable 'y' no declarada
+[Error Semántico] Línea 137: Variable 'num' no declarada
+[Error Semántico] Línea 138: Variable 'a' no declarada
+[Error Semántico] Línea 138: Variable 'b' no declarada
+[Error Semántico] Línea 145: Función 'errorFuncionNoDeclarada' no está declarada
+[Error Semántico] Línea 146: Función 'funcionInexistente' no está declarada
+[Error Semántico] Línea 151: Función 'funcionTarde' no está declarada
+[Error Semántico] Línea 161: Return usado fuera de una función
+[Error Semántico] Línea 163: Return usado fuera de una función
+[Error Semántico] Línea 169: Return usado fuera de una función
+[Error Semántico] Línea 174: Return usado fuera de una función
+[Error Semántico] Línea 179: Variable 'a' no declarada
+[Error Semántico] Línea 179: Variable 'b' no declarada
+[Error Semántico] Línea 179: Return usado fuera de una función
+[Error Semántico] Línea 183: Función 'sumar' espera 2 argumentos, recibió 1
+[Error Semántico] Línea 184: Función 'sumar' espera 2 argumentos, recibió 3
+[Error Semántico] Línea 189: Return usado fuera de una función
+[Error Semántico] Línea 193: Variable 'x' no declarada
+[Error Semántico] Línea 193: Variable 'y' no declarada
+[Error Semántico] Línea 194: Variable 'x' no declarada
+[Error Semántico] Línea 194: Return usado fuera de una función
+[Error Semántico] Línea 196: Variable 'y' no declarada
+[Error Semántico] Línea 196: Return usado fuera de una función
+[Error Semántico] Línea 206: Return usado fuera de una función
+[Error Semántico] Línea 213: Return usado fuera de una función
+[Error Semántico] Línea 217: Return usado fuera de una función
+[Error Semántico] Línea 220: Return usado fuera de una función
+[Error Semántico] Línea 225: Return usado fuera de una función
+[Error Semántico] Línea 229: Return usado fuera de una función
+[Error Semántico] Línea 234: Variable 'a' no declarada
+[Error Semántico] Línea 234: Variable 'b' no declarada
+[Error Semántico] Línea 234: Return usado fuera de una función
+[Error Semántico] Línea 238: Variable 'base' no declarada
+[Error Semántico] Línea 238: Variable 'altura' no declarada
+[Error Semántico] Línea 238: Return usado fuera de una función
+[Error Semántico] Línea 243: Variable 'resultado1' ya fue declarada
+[Error Semántico] Línea 244: Función 'funcionInexistente2' no está declarada
+[Error Semántico] Línea 244: Variable 'resultado2' ya fue declarada
+
+Total: 67
+
+======================================================================
+=== TABLA DE SÍMBOLOS ===
+
+Variable             Tipo            Mutable   
+---------------------------------------------
+resultado1           Int             val       
+resultado2           Int             val       
+x                    Int             val       
+condicion            Boolean         val       
+
+======================================================================
+=== TABLA DE FUNCIONES ===
+
+Función              Retorno         Parámetros
+---------------------------------------------
+errorLlamadaAntes    Unit            0         
+funcionTarde         Unit            0         
+errorRetornoSobrante Unit            0         
+sumar                Int             2         
+errorArgumentos      Unit            0         
+funcionCorrecta2     Int             2         
+funcionCorrecta3     Unit            0         
+multiplicar          Int             2         
+calcularArea         Int             2         
+casosMixtosFunciones Unit            0         
+
+======================================================================
+=== TABLA DE CLASES ===
+
+(vacía)
+
+======================================================================
+=== RESUMEN ===
+
+Tokens: 785
+Errores léxicos: 0
+Errores sintácticos: 58
+Errores semánticos: 67
+
+❌ ANÁLISIS COMPLETADO CON 125 ERRORES
