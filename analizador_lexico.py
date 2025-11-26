@@ -16,6 +16,7 @@ def find_column(lexpos: int) -> int:
     return (lexpos - last_nl) if last_nl >= 0 else (lexpos + 1)
 
 # SECCIÓN INTEGRANTE 1: Luis Vergara - LuisVergaraA
+
 # Palabras reservadas
 reserved_integrante1 = {
     'val'    : 'VAL',
@@ -49,7 +50,7 @@ tokens_integrante1 = [
     'RANGE',         # ..
 ]
 
-# Reglas de tokens
+# Reglas de tokens (operadores de 2 caracteres primero)
 t_PLUSPLUS = r'\+\+'
 t_MINUSMINUS = r'--'
 t_PLUSEQUAL = r'\+='
@@ -57,6 +58,7 @@ t_MINUSEQUAL = r'-='
 t_ARROW = r'->'
 t_RANGE = r'\.\.'
 
+# Operadores de 1 carácter
 t_PLUS = r'\+'
 t_MINUS = r'-'
 t_STAR = r'\*'
@@ -65,6 +67,7 @@ t_PERCENT = r'%'
 t_EQUAL = r'='
 
 # FIN SECCIÓN INTEGRANTE 1
+# =====================================================
 
 
 # SECCIÓN INTEGRANTE 2: Luis Roca - LuisRoca09
@@ -79,12 +82,13 @@ reserved_integrante2 = {
     'false'  : 'FALSE',
     'null'   : 'NULL',
     'println': 'PRINTLN',
+    'readln' : 'READLN',
 }
 
 # Tokens operadores relacionales y lógicos 
 tokens_integrante2 = [
     # Relacionales
-    'LT',            # 
+    'LT',            # <
     'GT',            # >
     'LTE',           # <=
     'GTE',           # >=
@@ -100,7 +104,7 @@ tokens_integrante2 = [
     'ELVIS',         # ?:
 ]
 
-# Reglas de tokens 
+# Reglas de tokens (operadores de 2 caracteres primero)
 t_LTE = r'<='
 t_GTE = r'>='
 t_EQEQ = r'=='
@@ -109,31 +113,26 @@ t_AND = r'&&'
 t_OR = r'\|\|'
 t_ELVIS = r'\?:'
 
+# Operadores de 1 carácter
 t_LT = r'<'
 t_GT = r'>'
 t_BANG = r'!'
 
-
-
-
 # FIN SECCIÓN INTEGRANTE 2
+# =====================================================
 
 
-# SECCIÓN INTEGRANTE 3
+# SECCIÓN INTEGRANTE 3: Johao Dorado/johaodorado
+# Estructura y Literales
 
-# ===========================================
-# SECCIÓN INTEGRANTE 3: Structure & Literals
-# Responsable: [Johao Dorado/johaodorado]
-# ===========================================
-
-# Palabras reservadas de estructura (3)
+# Palabras reservadas de estructura
 reserved_integrante3 = {
     'class'  : 'CLASS',
     'object' : 'OBJECT',
     'this'   : 'THIS',
 }
 
-# Tokens delimitadores y literales (15)
+# Tokens delimitadores y literales
 tokens_integrante3 = [
     # Literales
     'IDENT',
@@ -185,52 +184,49 @@ def t_INT(t):
     return t
 
 def t_CHAR(t):
-    r"'([^'\\\\]|\\\\.)'"
-    t.value = t.value[1:-1]  # Quitar comillas
+    r"'([^'\\]|\\.)''"
+    t.value = t.value[1:-1] 
     return t
 
 def t_STRING(t):
-    r'"([^"\\\\]|\\\\.)*"'
-    t.value = t.value[1:-1]  # Quitar comillas
+    r'"([^"\\]|\\.)*"'
+    t.value = t.value[1:-1]  
     return t
 
 def t_IDENT(t):
     r'[a-zA-Z_][a-zA-Z0-9_]*'
-    # Verificar si es palabra reservada
     t.type = reserved.get(t.value, 'IDENT')
     return t
 
 # Errores léxicos específicos
 def t_BAD_INT(t):
-    r'\\d+[a-zA-Z_][a-zA-Z0-9_]*'
+    r'\d+[a-zA-Z_][a-zA-Z0-9_]*'  
     col = find_column(t.lexpos)
     lexical_errors.append(
-        f"Entero inválido '{t.value}' en línea {t.lineno}, columna {col}"
+        f"[Error Léxico] Línea {t.lineno}, col {col}: Entero inválido '{t.value}'"
     )
     t.lexer.skip(len(t.value))
 
 def t_UNCLOSED_STRING(t):
-    r'"([^"\\n]|\\\\.)*$'
+    r'"([^"\n]|\\.)*$'  
     col = find_column(t.lexpos)
     lexical_errors.append(
-        f"Cadena no cerrada desde línea {t.lineno}, columna {col}"
+        f"[Error Léxico] Línea {t.lineno}, col {col}: Cadena no cerrada"
     )
     t.lexer.skip(len(t.value))
 
 def t_UNCLOSED_CHAR(t):
-    r"'([^'\\n]|\\\\.)*$"
+    r"'([^'\n]|\\.)*$"  
     col = find_column(t.lexpos)
     lexical_errors.append(
-        f"Carácter no cerrado en línea {t.lineno}, columna {col}"
+        f"[Error Léxico] Línea {t.lineno}, col {col}: Carácter no cerrado"
     )
     t.lexer.skip(len(t.value))
 
 # FIN SECCIÓN INTEGRANTE 3
-# ===========================================
 
-# ====================================
+
 # CONSOLIDACIÓN FINAL
-# ====================================
 
 # Juntar todas las palabras reservadas
 reserved = {}
@@ -246,9 +242,7 @@ tokens = (
     list(reserved.values())
 )
 
-# ====================================
 # REGLAS COMUNES
-# ====================================
 
 # Ignorar espacios y tabulaciones
 t_ignore = ' \t\r'
@@ -258,11 +252,11 @@ def t_COMMENT_SINGLE(t):
     r'//.*'
     pass  # Ignorar comentario
 
-# Comentarios multilínea
+# Comentarios multilínea - CORREGIDO
 def t_COMMENT_MULTI(t):
-    r'/\\*[\\s\\S]*?\\*/'
+    r'/\*[\s\S]*?\*/'  # CORREGIDO: sin escapes dobles
     # Contar saltos de línea dentro del comentario
-    t.lexer.lineno += t.value.count('\\n')
+    t.lexer.lineno += t.value.count('\n')  # CORREGIDO: \n simple
 
 # Saltos de línea
 def t_newline(t):
@@ -277,14 +271,10 @@ def t_error(t):
     )
     t.lexer.skip(1)
 
-# ====================================
 # CONSTRUCCIÓN DEL LEXER
-# ====================================
 
-lexer = lex.lex(debug=True)
+lexer = lex.lex(debug=False)
 
-# ====================================
 # EXPORTACIONES
-# ====================================
 
 __all__ = ['tokens', 'lexer', 'lexical_errors', 'set_source', 'find_column', 'reserved']

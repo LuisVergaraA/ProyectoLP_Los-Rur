@@ -22,7 +22,7 @@ def extraer_usuario_de_archivo(filename):
 def generar_nombre_log(usuario):
     """
     Genera nombre de log con formato: lexico-usuario-ddmmyyyy-HHhMM.txt
-    Ejemplo: lexico-juan-12112025-14h30.txt
+    Ejemplo: lexico-luis-12112025-14h30.txt
     """
     now = datetime.now()
     fecha = now.strftime('%d%m%Y')
@@ -40,7 +40,7 @@ def guardar_log(usuario, tokens_list, errores):
     with open(ruta_log, 'w', encoding='utf-8') as f:
         # Encabezado
         f.write("=" * 70 + "\n")
-        f.write(f"ANALIZADOR LÉXICO - MINIKOTLIN MEJORADO\n")
+        f.write(f"ANALIZADOR LÉXICO\n")
         f.write(f"Usuario: {usuario}\n")
         f.write(f"Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n")
         f.write("=" * 70 + "\n\n")
