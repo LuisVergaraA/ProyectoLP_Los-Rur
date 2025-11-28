@@ -330,10 +330,10 @@
                     </div>
 
                     <div class="tabs">
-                        <button class="tab active" onclick="cambiarTab('errores')">❌ Errores</button>
-                        <button class="tab" onclick="cambiarTab('tokens')">🎫 Tokens</button>
-                        <button class="tab" onclick="cambiarTab('tablas')">📚 Tablas</button>
-                        <button class="tab" onclick="cambiarTab('ast')">🌳 AST</button>
+                        <button class="tab active" onclick="cambiarTab(event, 'errores')">❌ Errores</button>
+                        <button class="tab" onclick="cambiarTab(event, 'tokens')">🎫 Tokens</button>
+                        <button class="tab" onclick="cambiarTab(event, 'tablas')">📚 Tablas</button>
+                        <button class="tab" onclick="cambiarTab(event, 'ast')">🌳 AST</button>
                     </div>
 
                     <div id="tab-errores" class="tab-content active"></div>
@@ -346,7 +346,8 @@
     </div>
 
     <script>
-        const ejemplos = {{ ejemplos|tojson }};
+        // Cargar ejemplos desde Flask (corregido)
+        const ejemplos = {{ ejemplos | tojson | safe }};
 
         document.getElementById('ejemploSelect').addEventListener('change', function() {
             const nombre = this.value;
@@ -361,7 +362,7 @@
             document.getElementById('resultados').style.display = 'none';
         }
 
-        function cambiarTab(tabName) {
+        function cambiarTab(event, tabName) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             
@@ -415,7 +416,7 @@
             
             // AST
             document.getElementById('tab-ast').innerHTML = resultado.ast 
-                ? `<pre>${resultado.ast}</pre>` 
+                ? '<pre>' + resultado.ast + '</pre>'
                 : '<p>No se generó AST</p>';
         }
 
@@ -432,22 +433,22 @@
 
             if (errores.lexicos.length > 0) {
                 html += '<h3 style="color: #dc3545;">Errores Léxicos</h3>';
-                errores.lexicos.forEach(err => {
-                    html += `<div class="error-item">${err}</div>`;
+                errores.lexicos.forEach(function(err) {
+                    html += '<div class="error-item">' + err + '</div>';
                 });
             }
 
             if (errores.sintacticos.length > 0) {
                 html += '<h3 style="color: #dc3545; margin-top: 20px;">Errores Sintácticos</h3>';
-                errores.sintacticos.forEach(err => {
-                    html += `<div class="error-item">${err}</div>`;
+                errores.sintacticos.forEach(function(err) {
+                    html += '<div class="error-item">' + err + '</div>';
                 });
             }
 
             if (errores.semanticos.length > 0) {
                 html += '<h3 style="color: #dc3545; margin-top: 20px;">⭐ Errores Semánticos</h3>';
-                errores.semanticos.forEach(err => {
-                    html += `<div class="error-item">${err}</div>`;
+                errores.semanticos.forEach(function(err) {
+                    html += '<div class="error-item">' + err + '</div>';
                 });
             }
 
@@ -464,19 +465,19 @@
 
             let html = '<table><thead><tr><th>Tipo</th><th>Valor</th><th>Línea</th><th>Columna</th></tr></thead><tbody>';
             
-            tokens.slice(0, 100).forEach(tok => {
-                html += `<tr>
-                    <td><strong>${tok.type}</strong></td>
-                    <td>${tok.value}</td>
-                    <td>${tok.line}</td>
-                    <td>${tok.col}</td>
-                </tr>`;
+            tokens.slice(0, 100).forEach(function(tok) {
+                html += '<tr>' +
+                    '<td><strong>' + tok.type + '</strong></td>' +
+                    '<td>' + tok.value + '</td>' +
+                    '<td>' + tok.line + '</td>' +
+                    '<td>' + tok.col + '</td>' +
+                    '</tr>';
             });
             
             html += '</tbody></table>';
             
             if (tokens.length > 100) {
-                html += `<p style="text-align: center; margin-top: 15px; color: #666;">Mostrando 100 de ${tokens.length} tokens</p>`;
+                html += '<p style="text-align: center; margin-top: 15px; color: #666;">Mostrando 100 de ' + tokens.length + ' tokens</p>';
             }
             
             tabTokens.innerHTML = html;
@@ -490,13 +491,14 @@
             html += '<h3>📋 Tabla de Variables</h3>';
             if (Object.keys(tablas.variables).length > 0) {
                 html += '<table><thead><tr><th>Variable</th><th>Tipo</th><th>Mutable</th><th>Inicializada</th></tr></thead><tbody>';
-                for (const [name, info] of Object.entries(tablas.variables)) {
-                    html += `<tr>
-                        <td><strong>${name}</strong></td>
-                        <td>${info.type}</td>
-                        <td>${info.mutable ? 'var' : 'val'}</td>
-                        <td>${info.initialized ? 'Sí' : 'No'}</td>
-                    </tr>`;
+                for (const name in tablas.variables) {
+                    const info = tablas.variables[name];
+                    html += '<tr>' +
+                        '<td><strong>' + name + '</strong></td>' +
+                        '<td>' + info.type + '</td>' +
+                        '<td>' + (info.mutable ? 'var' : 'val') + '</td>' +
+                        '<td>' + (info.initialized ? 'Sí' : 'No') + '</td>' +
+                        '</tr>';
                 }
                 html += '</tbody></table>';
             } else {
@@ -507,12 +509,13 @@
             html += '<h3 style="margin-top: 30px;">📋 Tabla de Funciones</h3>';
             if (Object.keys(tablas.funciones).length > 0) {
                 html += '<table><thead><tr><th>Función</th><th>Retorno</th><th>Parámetros</th></tr></thead><tbody>';
-                for (const [name, info] of Object.entries(tablas.funciones)) {
-                    html += `<tr>
-                        <td><strong>${name}</strong></td>
-                        <td>${info.ret}</td>
-                        <td>${info.params.length}</td>
-                    </tr>`;
+                for (const name in tablas.funciones) {
+                    const info = tablas.funciones[name];
+                    html += '<tr>' +
+                        '<td><strong>' + name + '</strong></td>' +
+                        '<td>' + info.ret + '</td>' +
+                        '<td>' + info.params.length + '</td>' +
+                        '</tr>';
                 }
                 html += '</tbody></table>';
             } else {

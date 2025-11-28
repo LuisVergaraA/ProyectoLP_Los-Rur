@@ -680,10 +680,31 @@ def p_list_elems(p):
 
 # REGLAS COMUNES
 
-# --- BLOQUES ---
+# --- BLOQUES (CON SOPORTE PARA FUNCIONES ANIDADAS) ---
 def p_block(p):
-    '''block : LBRACE stmts RBRACE'''
+    '''block : LBRACE block_stmts RBRACE'''
     p[0] = ('block', p[2])
+
+def p_block_stmts(p):
+    '''block_stmts : block_stmts block_stmt
+                   | block_stmt
+                   | empty'''
+    if len(p) == 3:
+        if p[1] is None:
+            p[0] = [p[2]]
+        elif isinstance(p[1], list):
+            p[0] = p[1] + [p[2]]
+        else:
+            p[0] = [p[1], p[2]]
+    elif p[1]:
+        p[0] = [p[1]]
+    else:
+        p[0] = []
+
+def p_block_stmt(p):
+    '''block_stmt : stmt
+                  | function_def'''
+    p[0] = p[1]
 
 # --- IMPRESIÓN (println) ---
 def p_print(p):
@@ -845,4 +866,5 @@ def analyze_syntax(code: str):
         'function_table': dict(function_table),
         'class_table': dict(class_table)
     }
-all = ['parser', 'analyze_syntax','syntactic_errors', 'semantic_errors','symbol_table', 'function_table', 'class_table']
+
+__all__ = ['parser', 'analyze_syntax','syntactic_errors', 'semantic_errors','symbol_table', 'function_table', 'class_table']
