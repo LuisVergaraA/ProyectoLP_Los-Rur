@@ -38,7 +38,7 @@ ProyectoLP_Los-Rur/
 ├── requirements.txt      
 ├── README.md             
 ├── .gitignore               
-├── DOCUMENTO_REGLAS_SEMANTICAS.md  
+├── Documentacion_LOSRUR.pdf 
 ├── algoritmos_kotlin/        
 │   ├── algoritmo_LuisVergaraA.kt
 │   ├── algoritmo_LuisRoca09.kt
