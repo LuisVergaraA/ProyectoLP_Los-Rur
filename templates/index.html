@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compilador MiniKotlin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .toolbar {
+            background: #f5f5f5;
+            padding: 20px 30px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        select, button {
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        select {
+            flex: 1;
+            background: white;
+            border: 2px solid #ddd;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-ejecutar {
+            background: #28a745;
+            padding: 12px 40px;
+        }
+
+        .btn-ejecutar:hover {
+            background: #218838;
+        }
+
+        .btn-limpiar {
+            background: #dc3545;
+        }
+
+        .btn-limpiar:hover {
+            background: #c82333;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .panel {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .panel h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 500px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            resize: vertical;
+            background: white;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .error-item {
+            background: #ffe6e6;
+            border-left: 4px solid #dc3545;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            color: #721c24;
+        }
+
+        .success-message {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            border-radius: 5px;
+            color: #155724;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 13px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Compilador MiniKotlin</h1>
+            <p>Analizador Léxico, Sintáctico y Semántico</p>
+        </div>
+
+        <div class="toolbar">
+            <select id="ejemploSelect">
+                <option value="">-- Seleccionar Algoritmo --</option>
+                {% for nombre, codigo in ejemplos.items() %}
+                <option value="{{ nombre }}">{{ nombre }}</option>
+                {% endfor %}
+            </select>
+            <button class="btn-ejecutar" onclick="ejecutarAnalisis()">▶ EJECUTAR ANÁLISIS</button>
+            <button class="btn-limpiar" onclick="limpiarEditor()">🧹 LIMPIAR</button>
+        </div>
+
+        <div class="main-content">
+            <div class="panel">
+                <h2>📝 Editor de Código</h2>
+                <textarea id="codigoEditor" placeholder="Escribe o selecciona un algoritmo de ejemplo..."></textarea>
+            </div>
+
+            <div class="panel">
+                <h2>📊 Resultados del Análisis</h2>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Analizando código...</p>
+                </div>
+
+                <div id="resultados" style="display: none;">
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-number" id="statTokens">0</div>
+                            <div class="stat-label">Tokens</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="statLex">0</div>
+                            <div class="stat-label">Errores Léxicos</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="statSyn">0</div>
+                            <div class="stat-label">Errores Sintácticos</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="statSem">0</div>
+                            <div class="stat-label">Errores Semánticos</div>
+                        </div>
+                    </div>
+
+                    <div class="tabs">
+                        <button class="tab active" onclick="cambiarTab('errores')">❌ Errores</button>
+                        <button class="tab" onclick="cambiarTab('tokens')">🎫 Tokens</button>
+                        <button class="tab" onclick="cambiarTab('tablas')">📚 Tablas</button>
+                        <button class="tab" onclick="cambiarTab('ast')">🌳 AST</button>
+                    </div>
+
+                    <div id="tab-errores" class="tab-content active"></div>
+                    <div id="tab-tokens" class="tab-content"></div>
+                    <div id="tab-tablas" class="tab-content"></div>
+                    <div id="tab-ast" class="tab-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ejemplos = {{ ejemplos|tojson }};
+
+        document.getElementById('ejemploSelect').addEventListener('change', function() {
+            const nombre = this.value;
+            if (nombre && ejemplos[nombre]) {
+                document.getElementById('codigoEditor').value = ejemplos[nombre];
+            }
+        });
+
+        function limpiarEditor() {
+            document.getElementById('codigoEditor').value = '';
+            document.getElementById('ejemploSelect').value = '';
+            document.getElementById('resultados').style.display = 'none';
+        }
+
+        function cambiarTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+
+        async function ejecutarAnalisis() {
+            const codigo = document.getElementById('codigoEditor').value;
+            
+            if (!codigo.trim()) {
+                alert('⚠️ El editor está vacío');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultados').style.display = 'none';
+
+            try {
+                const response = await fetch('/analizar', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({codigo: codigo})
+                });
+
+                const resultado = await response.json();
+                mostrarResultados(resultado);
+            } catch (error) {
+                alert('❌ Error al analizar: ' + error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('resultados').style.display = 'block';
+            }
+        }
+
+        function mostrarResultados(resultado) {
+            // Estadísticas
+            document.getElementById('statTokens').textContent = resultado.tokens.length;
+            document.getElementById('statLex').textContent = resultado.errores.lexicos.length;
+            document.getElementById('statSyn').textContent = resultado.errores.sintacticos.length;
+            document.getElementById('statSem').textContent = resultado.errores.semanticos.length;
+
+            // Errores
+            mostrarErrores(resultado.errores);
+            
+            // Tokens
+            mostrarTokens(resultado.tokens);
+            
+            // Tablas
+            mostrarTablas(resultado.tablas);
+            
+            // AST
+            document.getElementById('tab-ast').innerHTML = resultado.ast 
+                ? `<pre>${resultado.ast}</pre>` 
+                : '<p>No se generó AST</p>';
+        }
+
+        function mostrarErrores(errores) {
+            const tabErrores = document.getElementById('tab-errores');
+            const total = errores.lexicos.length + errores.sintacticos.length + errores.semanticos.length;
+
+            if (total === 0) {
+                tabErrores.innerHTML = '<div class="success-message">✅ ANÁLISIS EXITOSO: No se encontraron errores</div>';
+                return;
+            }
+
+            let html = '';
+
+            if (errores.lexicos.length > 0) {
+                html += '<h3 style="color: #dc3545;">Errores Léxicos</h3>';
+                errores.lexicos.forEach(err => {
+                    html += `<div class="error-item">${err}</div>`;
+                });
+            }
+
+            if (errores.sintacticos.length > 0) {
+                html += '<h3 style="color: #dc3545; margin-top: 20px;">Errores Sintácticos</h3>';
+                errores.sintacticos.forEach(err => {
+                    html += `<div class="error-item">${err}</div>`;
+                });
+            }
+
+            if (errores.semanticos.length > 0) {
+                html += '<h3 style="color: #dc3545; margin-top: 20px;">⭐ Errores Semánticos</h3>';
+                errores.semanticos.forEach(err => {
+                    html += `<div class="error-item">${err}</div>`;
+                });
+            }
+
+            tabErrores.innerHTML = html;
+        }
+
+        function mostrarTokens(tokens) {
+            const tabTokens = document.getElementById('tab-tokens');
+            
+            if (tokens.length === 0) {
+                tabTokens.innerHTML = '<p>No se encontraron tokens</p>';
+                return;
+            }
+
+            let html = '<table><thead><tr><th>Tipo</th><th>Valor</th><th>Línea</th><th>Columna</th></tr></thead><tbody>';
+            
+            tokens.slice(0, 100).forEach(tok => {
+                html += `<tr>
+                    <td><strong>${tok.type}</strong></td>
+                    <td>${tok.value}</td>
+                    <td>${tok.line}</td>
+                    <td>${tok.col}</td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            
+            if (tokens.length > 100) {
+                html += `<p style="text-align: center; margin-top: 15px; color: #666;">Mostrando 100 de ${tokens.length} tokens</p>`;
+            }
+            
+            tabTokens.innerHTML = html;
+        }
+
+        function mostrarTablas(tablas) {
+            const tabTablas = document.getElementById('tab-tablas');
+            let html = '';
+
+            // Tabla de Variables
+            html += '<h3>📋 Tabla de Variables</h3>';
+            if (Object.keys(tablas.variables).length > 0) {
+                html += '<table><thead><tr><th>Variable</th><th>Tipo</th><th>Mutable</th><th>Inicializada</th></tr></thead><tbody>';
+                for (const [name, info] of Object.entries(tablas.variables)) {
+                    html += `<tr>
+                        <td><strong>${name}</strong></td>
+                        <td>${info.type}</td>
+                        <td>${info.mutable ? 'var' : 'val'}</td>
+                        <td>${info.initialized ? 'Sí' : 'No'}</td>
+                    </tr>`;
+                }
+                html += '</tbody></table>';
+            } else {
+                html += '<p>(vacía)</p>';
+            }
+
+            // Tabla de Funciones
+            html += '<h3 style="margin-top: 30px;">📋 Tabla de Funciones</h3>';
+            if (Object.keys(tablas.funciones).length > 0) {
+                html += '<table><thead><tr><th>Función</th><th>Retorno</th><th>Parámetros</th></tr></thead><tbody>';
+                for (const [name, info] of Object.entries(tablas.funciones)) {
+                    html += `<tr>
+                        <td><strong>${name}</strong></td>
+                        <td>${info.ret}</td>
+                        <td>${info.params.length}</td>
+                    </tr>`;
+                }
+                html += '</tbody></table>';
+            } else {
+                html += '<p>(vacía)</p>';
+            }
+
+            // Tabla de Clases
+            html += '<h3 style="margin-top: 30px;">📋 Tabla de Clases</h3>';
+            if (Object.keys(tablas.clases).length > 0) {
+                html += '<pre>' + JSON.stringify(tablas.clases, null, 2) + '</pre>';
+            } else {
+                html += '<p>(vacía)</p>';
+            }
+
+            tabTablas.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

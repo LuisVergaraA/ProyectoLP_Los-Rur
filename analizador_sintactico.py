@@ -16,6 +16,9 @@ class_table = {}
 current_function = None
 current_class = None
 
+# Tablas de símbolos por contexto (scope local)
+local_scopes = {}
+
 # Errores
 semantic_errors = []
 syntactic_errors = []
@@ -260,7 +263,7 @@ def p_expr_postfix(p):
 # SECCION INTEGRANTE 2: Luis Roca - LuisRoca09
 # Responsable de: Funciones, While, For, When, Operadores
 
-# --- DEFINICIÓN DE FUNCIÓN SIMPLE ---
+# --- DEFINICIÓN DE FUNCIÓN SIMPLE (sin parámetros, sin tipo de retorno) ---
 def p_function_def_simple(p):
     '''function_def : FUN IDENT LPAREN RPAREN block'''
     global current_function
@@ -278,11 +281,19 @@ def p_function_def_simple(p):
             'line': line
         }
     
-    current_function = None
+    # Establecer contexto mientras se procesa el bloque
+    old_function = current_function
+    current_function = name
+    
+    # El bloque ya fue procesado con el contexto correcto
+    
+    # Restaurar contexto
+    current_function = old_function
+    
     p[0] = ('fun_def', name, [], 'Unit', p[5])
 
-# --- DEFINICIÓN DE FUNCIÓN CON PARÁMETROS ---
-def p_function_def_params(p):
+# --- DEFINICIÓN DE FUNCIÓN CON PARÁMETROS Y TIPO DE RETORNO ---
+def p_function_def_params_typed(p):
     '''function_def : FUN IDENT LPAREN params RPAREN COLON IDENT block'''
     global current_function
     name = p[2]
@@ -301,8 +312,38 @@ def p_function_def_params(p):
             'line': line
         }
     
-    current_function = None
+    # Establecer contexto
+    old_function = current_function
+    current_function = name
+    
+    # Restaurar contexto
+    current_function = old_function
+    
     p[0] = ('fun_def_typed', name, params, ret_type, p[8])
+
+# --- DEFINICIÓN DE FUNCIÓN CON PARÁMETROS SIN TIPO DE RETORNO ---
+def p_function_def_params_no_type(p):
+    '''function_def : FUN IDENT LPAREN params RPAREN block'''
+    global current_function
+    name = p[2]
+    params = p[4]
+    line = p.lineno(2)
+    
+    if name in function_table:
+        add_sem_error(line, f"Función '{name}' ya fue declarada")
+    else:
+        function_table[name] = {
+            'ret': 'Unit',
+            'params': params,
+            'returns': [],
+            'line': line
+        }
+    
+    old_function = current_function
+    current_function = name
+    current_function = old_function
+    
+    p[0] = ('fun_def', name, params, 'Unit', p[6])
 
 def p_params(p):
     '''params : params COMMA param
@@ -572,13 +613,19 @@ def p_property(p):
 def p_method(p):
     '''method : FUN IDENT LPAREN params RPAREN block
               | FUN IDENT LPAREN params RPAREN COLON IDENT block'''
+    global current_function
     name = p[2]
     params = p[4]
+    
+    old_function = current_function
+    current_function = name
     
     if len(p) == 7:
         p[0] = ('method', name, params, 'Unit', p[6])
     else:
         p[0] = ('method', name, params, p[7], p[8])
+    
+    current_function = old_function
 
 # --- OBJECT DECLARATION (SINGLETON) ---
 def p_class_def_object(p):
@@ -643,7 +690,7 @@ def p_print(p):
     '''print : PRINTLN LPAREN expr RPAREN SEMICOLON'''
     p[0] = ('println', p[3])
 
-# --- INGRESO DE DATOS (readln) - NUEVO ---
+# --- INGRESO DE DATOS (readln) ---
 def p_input_stmt(p):
     '''input_stmt : IDENT EQUAL func_call SEMICOLON'''
     # Para manejar: val x = readln()
@@ -787,7 +834,7 @@ def analyze_syntax(code: str):
     except Exception as e:
         syntactic_errors.append(f"[Error Fatal] {str(e)}")
         result = None
-    
+
     return {
         'tokens': tokens_list,
         'ast': result,
@@ -798,5 +845,4 @@ def analyze_syntax(code: str):
         'function_table': dict(function_table),
         'class_table': dict(class_table)
     }
-
-__all__ = ['parser', 'analyze_syntax','syntactic_errors', 'semantic_errors','symbol_table', 'function_table', 'class_table']
+all = ['parser', 'analyze_syntax','syntactic_errors', 'semantic_errors','symbol_table', 'function_table', 'class_table']

@@ -89,7 +89,7 @@ cat logs/semantico-johaodorado-*.txt
 
 ## Reglas Semánticas Implementadas
 
-Ver [DOCUMENTO_REGLAS_SEMANTICAS.md](DOCUMENTO_REGLAS_SEMANTICAS.md) para detalles completos.
+Ver [Documentacion_LOSRUR.pdf](https://github.com/LuisVergaraA/ProyectoLP_Los-Rur/blob/main/Documentacion_LOSRUR.pdf) para detalles completos.
 
 ### Integrante 1: Luis Vergara
 - **Regla 1:** Verificación de declaración de variables

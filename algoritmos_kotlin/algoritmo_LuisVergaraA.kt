@@ -1,298 +1,249 @@
-// AVANCE 1
+// =============================================================================
+// ALGORITMO DE PRUEBA - INTEGRANTE 1: LUIS VERGARA
+// =============================================================================
+// Responsable: Variables, Expresiones, If-Else, Reglas Semánticas 1 y 2
+// =============================================================================
 
-Prueba 1: Declaración de funciones básicas
+// AVANCE 1: ANÁLISIS LÉXICO
+
+// Prueba 1: Declaración de funciones básicas
 fun suma(a: Int, b: Int): Int {
-    return a + b
+    return a + b;
 }
 
 fun resta(x: Int, y: Int): Int {
-    return x - y
+    return x - y;
 }
 
 fun multiplicar(m: Int, n: Int): Int {
-    return m * n
+    return m * n;
 }
 
 fun dividir(numerador: Int, denominador: Int): Int {
-    return numerador / denominador
+    return numerador / denominador;
 }
 
 fun modulo(a: Int, b: Int): Int {
-    return a % b
+    return a % b;
 }
 
-
 // Prueba 2: Variables val e var
-val constante = 100
-var variable = 50
-
+val constante = 100;
+var variable = 50;
 
 // Prueba 3: Operadores de asignación compuesta
 fun incrementos() {
-    var contador = 0
-    contador++       // Operador ++
-    contador--       // Operador --
-    contador += 10   // Operador +=
-    contador -= 5    // Operador -=
-    
-    return
+    var contador = 0;
+    contador = contador + 1;
+    contador = contador + 10;
+    contador = contador - 5;
+    return;
 }
-
 
 // Prueba 4: Estructuras if-else
 fun valorAbsoluto(numero: Int): Int {
     if (numero >= 0) {
-        return numero
+        return numero;
     } else {
-        return -numero
+        return -numero;
     }
 }
 
-
-// Prueba 5: Lambdas con arrow operator
-val cuadrado = { x: Int -> x * x }
-val cubo = { n: Int -> n * n * n }
-
-
-// Prueba 6: Rangos con operador ..
-fun usarRangos() {
-    val rango1 = 1..10
-    val rango2 = 0..100
-    return
-}
-
-
-// Prueba 7: Operaciones aritméticas combinadas
+// Prueba 5: Operaciones aritméticas combinadas
 fun operacionesComplejas() {
-    val a = 10
-    val b = 5
-    val c = 3
+    val a = 10;
+    val b = 5;
+    val c = 3;
     
-    val resultado1 = a + b * c
-    val resultado2 = (a + b) * c
-    val resultado3 = a / b + c
-    val resultado4 = a % b - c
+    val resultado1 = a + b * c;
+    val resultado2 = (a + b) * c;
+    val resultado3 = a / b + c;
+    val resultado4 = a % b - c;
     
-    return
+    return;
 }
-
-
-// Prueba 8: Funciones anidadas con returns
+// Prueba 6: Funciones anidadas con returns
 fun funcionExterna(): Int {
     fun funcionInterna(): Int {
-        return 42
+        return 42;
     }
-    
-    return funcionInterna()
+    return funcionInterna();
 }
 
-
-// Prueba 9: Uso de val y var en expresiones
+// Prueba 7: Uso de val y var en expresiones
 fun asignaciones() {
-    val x = 10 + 5
-    val y = x * 2
-    var z = y / 3
-    z += 1
-    
-    return
+    val x = 10 + 5;
+    val y = x * 2;
+    var z = y / 3;
+    z = z + 1;
+    return;
 }
-
-
-// Prueba 10: If-else como expresión
+// Prueba 8: If-else como expresión
 fun maximo(a: Int, b: Int): Int {
-    val max = if (a > b) a else b
-    return max
+    if (a > b) {
+        return a;
+    } else {
+        return b;
+    }
 }
 
+// =============================================================================
+// AVANCE 2: ANÁLISIS SINTÁCTICO
+// =============================================================================
 
-// AVANCE 2: SINTAXIS COMPLEJA 
-
-// PRUEBA 1: DECLARACIÓN Y ASIGNACIÓN
-// Declaración con val (inmutable)
-val constante = 100;
+// Prueba 1: Declaración y asignación
 val pi = 3.14159;
 val nombre = "Juan";
 val activo = true;
 
-// Declaración con var (mutable)
 var contador = 0;
 var temperatura = 25.5;
 var mensaje = "Hola";
-var esValido = false;
 
-// Asignaciones múltiples
-var x = 10;
-x = 20;
-x = 30;
-
-var y = 5;
-y = y + 10;
-y = y * 2;
-
-
-// PRUEBA 2: EXPRESIONES ARITMÉTICAS
-// Operadores básicos
-val suma = 10 + 5;
-val resta = 20 - 8;
-val multiplicacion = 4 * 7;
-val division = 50 / 2;
-val modulo = 17 % 5;
-
-// Expresiones compuestas
-val resultado1 = 10 + 5 * 3;
-val resultado2 = (10 + 5) * 3;
-val resultado3 = 100 / (2 + 3);
-val resultado4 = 10 + 20 - 5 * 2;
-
-// Con paréntesis anidados
-val complejo1 = ((10 + 5) * (3 - 1)) / 2;
-val complejo2 = (50 - (10 + 5)) * 2;
-
-// Operadores unarios
-val negativo = -10;
-val dobleNegativo = -(-5);
-
-
-// PRUEBA 3: EXPRESIONES LÓGICAS
-// Operadores relacionales
-val esMayor = 10 > 5;
-val esMenor = 3 < 8;
-val esIgual = 5 == 5;
-val esDiferente = 7 != 3;
-val mayorIgual = 10 >= 10;
-val menorIgual = 5 <= 8;
-
-// Operadores lógicos AND
-val ambosVerdaderos = true && true;
-val unoFalso = true && false;
-val condicion1 = (10 > 5) && (20 < 30);
-val condicion2 = (x > 0) && (y > 0);
-
-// Operadores lógicos OR
-val alMenosUno = true || false;
-val ambos = false || false;
-val condicion3 = (x < 0) || (y < 0);
-val condicion4 = (temperatura > 30) || (temperatura < 0);
-
-// Operador de negación
-val noVerdadero = !true;
-val noFalso = !false;
-val negacion1 = !(10 > 5);
-val negacion2 = !(x == 0);
-
-// Combinaciones complejas
-val compleja1 = (10 > 5) && (20 < 30) || (x == 0);
-val compleja2 = !(x > 10) && (y < 20);
-val compleja3 = (a >= 0 && a <= 100) || (b >= 0 && b <= 100);
-
-
-// PRUEBA 4: IMPRESIÓN (println)
-println(42);
-println(3.14);
-println("Hola Mundo");
-println(true);
-println(x);
-println(x + y);
-println((10 + 5) * 2);
-println(x > 10);
-println("El resultado es:");
-
-
-// PRUEBA 5: ESTRUCTURAS DE CONTROL (if-else)
-// If simple
-if (x > 0) {
-    println("x es positivo");
+// Prueba 2: Expresiones aritméticas
+fun expresionesAritmeticas() {
+    val suma = 10 + 5;
+    val resta = 20 - 8;
+    val multiplicacion = 4 * 7;
+    val division = 50 / 2;
+    val modulo = 17 % 5;
+    
+    val resultado1 = 10 + 5 * 3;
+    val resultado2 = (10 + 5) * 3;
+    val resultado3 = 100 / (2 + 3);
+    
+    val negativo = -10;
+    
+    return;
 }
 
-// If-else
-if (temperatura > 30) {
-    println("Hace calor");
-} else {
-    println("Temperatura normal");
+// Prueba 3: Expresiones lógicas
+fun expresionesLogicas() {
+    val esMayor = 10 > 5;
+    val esMenor = 3 < 8;
+    val esIgual = 5 == 5;
+    val esDiferente = 7 != 3;
+    
+    val ambosVerdaderos = true && true;
+    val alMenosUno = true || false;
+    val noVerdadero = !true;
+    
+    return;
 }
 
-// If-else anidado
-if (x > 0) {
-    println("Positivo");
-} else {
-    if (x < 0) {
-        println("Negativo");
+// Prueba 4: Impresión
+fun pruebaPrintln() {
+    println(42);
+    println(3.14);
+    println("Hola Mundo");
+    println(true);
+    return;
+}
+
+// Prueba 5: Estructuras if-else anidadas
+fun ifElseAnidado(x: Int): Int {
+    if (x > 0) {
+        return 1;
     } else {
-        println("Cero");
+        if (x < 0) {
+            return -1;
+        } else {
+            return 0;
+        }
     }
 }
 
-// If-else como expresión
-val mensaje1 = if (x > 10) "Grande" else "Pequeño";
-val estado = if (activo) "Activo" else "Inactivo";
-
-// Condiciones complejas
-if ((x > 0) && (y > 0)) {
-    println("Ambos positivos");
+// Prueba 6: Condiciones complejas
+fun condicionesComplejas(x: Int, y: Int) {
+    if ((x > 0) && (y > 0)) {
+        println("Ambos positivos");
+    }
+    
+    if ((x > 10) || (y > 10)) {
+        println("Al menos uno mayor que 10");
+    }
+    
+    return;
 }
 
-if ((temperatura > 35) || (temperatura < 0)) {
-    println("Temperatura extrema");
-} else {
-    println("Temperatura normal");
-}
+// =============================================================================
+// AVANCE 3: ANÁLISIS SEMÁNTICO - REGLAS 1 Y 2
+// =============================================================================
 
-if (!(x == 0) && (y != 0)) {
-    val division = x / y;
-    println(division);
-}
-
-// AVANCE 3: PRUEBAS SEMÁNTICAS 
-
-// Prueba 1: Uso de variable no declarada
+// Prueba Semántica 1: Uso de variable no declarada (ERROR REGLA 1)
 fun errorVariableNoDeclarada() {
-    println(variableInexistente);  // ERROR: variable no declarada
+    println(variableInexistente);
 }
 
-// Prueba 2: Reasignación de val
+// Prueba Semántica 2: Reasignación de val (ERROR REGLA 2)
 fun errorReasignacionVal() {
     val constante = 100;
-    constante = 200;  // ERROR: val es inmutable
+    constante = 200;
 }
 
-// Prueba 3: Variable usada antes de inicializar
+// Prueba Semántica 3: Variable usada antes de inicializar (ERROR REGLA 1)
 fun errorUsoSinInicializar() {
     var x;
-    println(x);  // ERROR: usada antes de inicializar
+    println(x);
     x = 10;
 }
 
-// Prueba 4: Redeclaración de variable
+// Prueba Semántica 4: Redeclaración de variable (ERROR REGLA 1)
 fun errorRedeclaracion() {
     val nombre = "Juan";
-    val nombre = "Pedro";  // ERROR: redeclaración
+    val nombre = "Pedro";
 }
 
-// Prueba 5: Múltiples errores de inmutabilidad
+// Prueba Semántica 5: Múltiples errores de inmutabilidad (ERROR REGLA 2)
 fun errorMultiplesVal() {
     val a = 10;
     val b = 20;
     val c = 30;
     
-    a = 11;  // ERROR: a es inmutable
-    b = 21;  // ERROR: b es inmutable
-    c = 31;  // ERROR: c es inmutable
+    a = 11;
+    b = 21;
+    c = 31;
 }
 
-// Prueba 6: Variables correctas (sin errores)
+// Prueba Semántica 6: Variables correctas (SIN ERRORES)
 fun variablesCorrectas() {
     var x = 10;
-    x = 20;  // OK: x es var
-    x = 30;  // OK
+    x = 20;
+    x = 30;
     
     val y = 100;
-    // No se reasigna y
     
-    println(x);  // OK: x está declarada e inicializada
-    println(y);  // OK: y está declarada e inicializada
+    println(x);
+    println(y);
 }
 
-// Prueba 7: val sin inicialización
-fun errorValSinInicializar() {
-    val sinValor;  // ERROR: val debe inicializarse
+// Prueba Semántica 7: Operaciones aritméticas válidas (SIN ERRORES)
+fun operacionesValidas() {
+    val a = 10;
+    val b = 20;
+    
+    val suma = a + b;
+    val resta = a - b;
+    val mult = a * b;
+    val div = b / a;
+    val mod = b % a;
+    
+    return;
 }
+
+// Prueba Semántica 8: If-else con variables correctas (SIN ERRORES)
+fun ifElseCorrecto(numero: Int): Int {
+    var resultado = 0;
+    
+    if (numero > 0) {
+        resultado = 1;
+    } else {
+        resultado = -1;
+    }
+    
+    return resultado;
+}
+
+// =============================================================================
+// FIN DEL ALGORITMO DE PRUEBA
+// =============================================================================
